@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>隠れ社畜度チェック</title>
+<style>
+  :root{
+    --ink:#1c1a17;
+    --paper:#e8e3d7;
+    --paper2:#f0ece2;
+    --line:#c3bba9;
+    --red:#d8362a;
+    --red-d:#a8281f;
+    --stamp:#b5302a;
+    --mut:#6f685c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;min-height:100dvh;
+    background-image:repeating-linear-gradient(0deg,transparent,transparent 38px,rgba(0,0,0,.025) 38px,rgba(0,0,0,.025) 39px);
+  }
+  .card{
+    width:100%;max-width:430px;
+    background:var(--paper2);
+    border:2px solid var(--ink);
+    box-shadow:7px 7px 0 var(--ink);
+    position:relative;
+    overflow:hidden;
+  }
+  /* punch-card top edge */
+  .tape{
+    background:var(--ink);color:var(--paper2);
+    display:flex;justify-content:space-between;align-items:center;
+    padding:9px 16px;font-size:11px;letter-spacing:.18em;
+    font-family:"SF Mono",ui-monospace,Menlo,monospace;
+  }
+  .tape .dot{width:8px;height:8px;border-radius:50%;background:var(--red)}
+  .inner{padding:28px 24px 30px}
+
+  .eyebrow{
+    font-family:"SF Mono",ui-monospace,Menlo,monospace;
+    font-size:11px;letter-spacing:.3em;color:var(--mut);
+    text-transform:uppercase;margin-bottom:10px;
+  }
+  h1{
+    font-size:30px;line-height:1.28;font-weight:900;letter-spacing:.01em;
+    margin-bottom:14px;
+  }
+  h1 .hi{color:var(--red);}
+  .lead{font-size:14px;line-height:1.8;color:var(--mut);margin-bottom:26px}
+
+  .start{
+    width:100%;border:none;background:var(--red);color:#fff;
+    font-size:17px;font-weight:800;letter-spacing:.06em;
+    padding:16px;cursor:pointer;
+    box-shadow:4px 4px 0 var(--red-d);
+    transition:transform .05s, box-shadow .05s;
+    font-family:inherit;
+  }
+  .start:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--red-d)}
+  .meta{margin-top:18px;font-size:12px;color:var(--mut);text-align:center;letter-spacing:.04em}
+
+  /* progress */
+  .prog{display:flex;gap:6px;margin-bottom:22px}
+  .prog i{flex:1;height:6px;background:var(--line);display:block}
+  .prog i.on{background:var(--red)}
+  .qnum{
+    font-family:"SF Mono",ui-monospace,Menlo,monospace;
+    font-size:12px;color:var(--mut);letter-spacing:.16em;margin-bottom:10px;
+  }
+  .qtext{font-size:21px;font-weight:800;line-height:1.5;margin-bottom:22px}
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{
+    border:2px solid var(--ink);background:transparent;color:var(--ink);
+    text-align:left;padding:15px 16px;font-size:15px;font-weight:600;
+    cursor:pointer;font-family:inherit;line-height:1.4;
+    transition:transform .05s, box-shadow .05s, background .1s;
+    box-shadow:3px 3px 0 var(--ink);
+  }
+  .opt:hover{background:#fff}
+  .opt:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+
+  /* result */
+  .result{text-align:center;display:none}
+  .stamp-wrap{position:relative;padding:14px 0 4px}
+  .verdict-label{
+    font-family:"SF Mono",ui-monospace,Menlo,monospace;
+    font-size:12px;letter-spacing:.28em;color:var(--mut);margin-bottom:2px;
+  }
+  .score{
+    font-family:"SF Mono",ui-monospace,Menlo,monospace;
+    font-size:96px;font-weight:800;line-height:1;color:var(--red);
+    letter-spacing:-.02em;
+  }
+  .score .pct{font-size:42px;vertical-align:top;margin-left:2px}
+  .rank{
+    display:inline-block;margin:14px auto 2px;
+    border:2.5px solid var(--stamp);color:var(--stamp);
+    font-size:22px;font-weight:900;letter-spacing:.08em;
+    padding:8px 20px;transform:rotate(-4deg);
+    border-radius:6px;
+  }
+  .desc{font-size:14px;line-height:1.85;color:var(--ink);margin:22px 4px 0;text-align:left}
+  .bar{height:14px;background:var(--line);margin:22px 0 4px;position:relative;border:1.5px solid var(--ink)}
+  .bar span{position:absolute;left:0;top:0;bottom:0;background:var(--red);width:0;transition:width 1s cubic-bezier(.2,.7,.3,1)}
+  .scale{display:flex;justify-content:space-between;font-size:10px;color:var(--mut);font-family:"SF Mono",monospace;letter-spacing:.1em}
+  .again{
+    margin-top:26px;width:100%;background:transparent;border:2px solid var(--ink);
+    color:var(--ink);padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+    box-shadow:3px 3px 0 var(--ink);transition:transform .05s,box-shadow .05s;
+  }
+  .again:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+  .share-hint{margin-top:16px;font-size:12px;color:var(--mut);line-height:1.7}
+
+  .fade{animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){
+    .fade{animation:none}.bar span{transition:none}.start,.opt,.again{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="tape">
+    <span>TIME CARD / NO.<span id="cardno">0000</span></span>
+    <span class="dot"></span>
+    <span>隠れ社畜度</span>
+  </div>
+  <div class="inner">
+
+    <!-- START -->
+    <section id="start">
+      <div class="eyebrow">SELF CHECK</div>
+      <h1>あなたの<span class="hi">隠れ社畜度</span>、<br>正直に測りませんか。</h1>
+      <p class="lead">本人は「普通」と思っている。でも体は、もう会社に最適化されているかもしれません。7つの質問に、考えず直感で答えてください。</p>
+      <button class="start" onclick="start()">診断をはじめる</button>
+      <div class="meta">所要 約30秒 ／ 全7問 ／ 選ぶだけ</div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" style="display:none">
+      <div class="prog" id="prog"></div>
+      <div class="qnum" id="qnum"></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result" class="result">
+      <div class="stamp-wrap">
+        <div class="verdict-label">診断結果</div>
+        <div class="score"><span id="scoreNum">0</span><span class="pct">%</span></div>
+        <div class="rank" id="rank">—</div>
+      </div>
+      <div class="bar"><span id="barFill"></span></div>
+      <div class="scale"><span>自由人</span><span>社畜予備軍</span><span>重症</span></div>
+      <p class="desc" id="desc"></p>
+      <button class="again" onclick="reset()">もう一度はかる</button>
+      <p class="share-hint">この結果をスクショして「#隠れ社畜度」で投稿してみてください。<br>あなたは何%でしたか？</p>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  const QS = [
+    {q:"スマホの通知が鳴ると、休日でも一瞬ビクッとする", a:[["それはもう反射です",3],["気づけば見てる",2],["音は切ってある",0]]},
+    {q:"金曜の夜より、月曜の朝のほうが落ち着く", a:[["正直わかる",3],["どちらとも言えない",1],["ありえない",0]]},
+    {q:"有給を取るとき、理由を考えてしまう", a:[["正当な理由がないと無理",3],["少し気が引ける",2],["権利なので堂々と取る",0]]},
+    {q:"「お疲れさまです」を、家族や友人にも打ちかけたことがある", a:[["ある",3],["危なかった",1],["ない",0]]},
+    {q:"休日にやりたいことが、思い浮かばない", a:[["寝るくらい",3],["なんとなくある",1],["やりたいことだらけ",0]]},
+    {q:"残業しないと、なんだか落ち着かない", a:[["定時で帰ると逆に不安",3],["たまに思う",2],["全く思わない",0]]},
+    {q:"体調が悪くても、まず「休めるか」より「迷惑か」を考える", a:[["迷惑が先に来る",3],["半々",1],["自分の体が優先",0]]},
+  ];
+
+  const RANKS = [
+    {min:0,  max:20, rank:"自由人",        desc:"おめでとうございます。あなたの体と心は、まだ自分のものです。仕事は人生の一部、という健全な距離感を保てています。この感覚は、意識しないと意外と簡単に失われます。今のうちに「これが普通」と覚えておいてください。"},
+    {min:21, max:45, rank:"軽度",          desc:"まだ大丈夫。でも、いくつかの習慣が会社側に寄りはじめています。休日に仕事を思い出す回数が増えていたら、黄色信号。意識して「何もしない時間」を予定に入れるだけで、十分に戻れる段階です。"},
+    {min:46, max:70, rank:"社畜予備軍",     desc:"要注意ゾーンです。あなたの「普通」は、すでに会社基準で再設定されているかもしれません。通知への反射、休めない罪悪感——これは性格ではなく、環境がつくった習慣です。仕組みを疑う価値があります。"},
+    {min:71, max:100,rank:"重症",          desc:"正直に答えてくれてありがとうございます。これは、あなたが弱いからではありません。長く頑張れる人ほど、こうなります。まず「会社の外で完結する時間」を1つ持つこと。スマホ1つでできる小さな何かから始めるのが、現実的な第一歩です。"},
+  ];
+
+  let qi=0, total=0;
+  const maxTotal = QS.length*3;
+
+  document.getElementById('cardno').textContent =
+    String(Math.floor(1000+Math.random()*8999));
+
+  function start(){
+    document.getElementById('start').style.display='none';
+    document.getElementById('quiz').style.display='block';
+    qi=0; total=0; renderProg(); renderQ();
+  }
+  function renderProg(){
+    const p=document.getElementById('prog'); p.innerHTML='';
+    for(let i=0;i<QS.length;i++){
+      const b=document.createElement('i');
+      if(i<qi) b.className='on';
+      p.appendChild(b);
+    }
+  }
+  function renderQ(){
+    const cur=QS[qi];
+    const quiz=document.getElementById('quiz');
+    quiz.classList.remove('fade'); void quiz.offsetWidth; quiz.classList.add('fade');
+    document.getElementById('qnum').textContent='Q'+(qi+1)+' / '+QS.length;
+    document.getElementById('qtext').textContent=cur.q;
+    const o=document.getElementById('opts'); o.innerHTML='';
+    cur.a.forEach(([label,val])=>{
+      const b=document.createElement('button');
+      b.className='opt'; b.textContent=label;
+      b.onclick=()=>choose(val);
+      o.appendChild(b);
+    });
+  }
+  function choose(val){
+    total+=val; qi++; renderProg();
+    if(qi<QS.length){ renderQ(); }
+    else{ showResult(); }
+  }
+  function showResult(){
+    document.getElementById('quiz').style.display='none';
+    const res=document.getElementById('result');
+    res.style.display='block'; res.classList.add('fade');
+    const pct=Math.round(total/maxTotal*100);
+    const r=RANKS.find(x=>pct>=x.min&&pct<=x.max)||RANKS[RANKS.length-1];
+    document.getElementById('rank').textContent=r.rank;
+    document.getElementById('desc').textContent=r.desc;
+    // count up
+    let n=0; const num=document.getElementById('scoreNum');
+    const step=Math.max(1,Math.round(pct/24));
+    const t=setInterval(()=>{
+      n+=step; if(n>=pct){n=pct;clearInterval(t);}
+      num.textContent=n;
+    },22);
+    setTimeout(()=>{document.getElementById('barFill').style.width=pct+'%';},120);
+  }
+  function reset(){
+    document.getElementById('result').style.display='none';
+    document.getElementById('start').style.display='block';
+    document.getElementById('scoreNum').textContent='0';
+    document.getElementById('barFill').style.width='0';
+    document.getElementById('cardno').textContent=String(Math.floor(1000+Math.random()*8999));
+  }
+</script>
+</body>
+</html>

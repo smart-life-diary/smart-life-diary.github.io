@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゴルフ・スコア伸び悩みタイプ診断</title>
+<style>
+  :root{
+    --turf:#0c2a1c;
+    --turf2:#10381f;
+    --panel:#0f3220;
+    --card:#123a26;
+    --line:#27543a;
+    --ink:#eef6ee;
+    --mut:#9fc4a8;
+    --lime:#bff05a;
+    --gold:#ecc14e;
+    --white:#f4faf2;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{min-height:100%}
+  body{
+    background:radial-gradient(130% 80% at 50% 0%,var(--turf2),var(--turf) 75%);
+    color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;min-height:100dvh;
+  }
+  /* faint fairway stripes */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(105deg,transparent 0 46px,rgba(255,255,255,.018) 46px 92px);}
+  .card{
+    width:100%;max-width:430px;position:relative;
+    background:var(--panel);border:1px solid var(--line);border-radius:20px;
+    box-shadow:0 28px 64px rgba(0,0,0,.55);overflow:hidden;
+  }
+  .topbar{display:flex;align-items:center;gap:9px;padding:14px 20px;border-bottom:1px solid var(--line);
+    font-size:11px;letter-spacing:.22em;color:var(--mut);font-family:ui-monospace,Menlo,monospace;text-transform:uppercase}
+  .ball{width:14px;height:14px;border-radius:50%;background:var(--white);
+    box-shadow:inset -2px -2px 0 rgba(0,0,0,.12);flex:none}
+  .inner{padding:30px 24px 32px}
+
+  .eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.28em;color:var(--lime);margin-bottom:12px}
+  h1{font-size:28px;line-height:1.36;font-weight:900;margin-bottom:14px}
+  h1 .u{background:linear-gradient(transparent 60%,rgba(191,240,90,.32) 60%)}
+  .lead{font-size:14px;line-height:1.85;color:var(--mut);margin-bottom:26px}
+
+  .start{width:100%;border:none;border-radius:13px;cursor:pointer;
+    background:linear-gradient(135deg,var(--lime),#9cd83e);color:#10300f;
+    font-size:17px;font-weight:800;letter-spacing:.05em;padding:16px;font-family:inherit;
+    transition:transform .08s,filter .15s}
+  .start:hover{filter:brightness(1.05)}
+  .start:active{transform:scale(.985)}
+  .meta{margin-top:18px;font-size:12px;color:var(--mut);text-align:center;letter-spacing:.04em}
+
+  .prog{display:flex;gap:6px;margin-bottom:24px}
+  .prog i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+  .prog i.on{background:var(--lime)}
+  .qnum{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--mut);letter-spacing:.16em;margin-bottom:12px}
+  .qtext{font-size:20px;font-weight:800;line-height:1.55;margin-bottom:24px}
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{border:1px solid var(--line);background:var(--card);color:var(--ink);
+    text-align:left;padding:15px 16px;font-size:15px;font-weight:600;border-radius:12px;
+    cursor:pointer;font-family:inherit;line-height:1.45;transition:border-color .12s,background .12s,transform .06s}
+  .opt:hover{border-color:var(--lime);background:#16442b}
+  .opt:active{transform:scale(.99)}
+
+  .result{display:none}
+  .res-eyebrow{text-align:center;font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.3em;color:var(--mut);margin-bottom:8px}
+  .badge{width:86px;height:86px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:40px;border:2px solid var(--lime);background:rgba(255,255,255,.03)}
+  .res-type{text-align:center;font-size:30px;font-weight:900;line-height:1.3;margin-bottom:4px;color:var(--lime)}
+  .res-tag{text-align:center;font-size:13px;color:var(--mut);margin-bottom:20px}
+  .desc{font-size:14px;line-height:1.9;margin-bottom:16px}
+  .block{background:#0d2c1c;border:1px solid var(--line);border-radius:13px;padding:15px 16px;margin-bottom:12px}
+  .block h3{font-size:12px;letter-spacing:.1em;color:var(--gold);margin-bottom:8px;font-weight:800}
+  .block p{font-size:13.5px;line-height:1.8}
+  .cta{background:linear-gradient(135deg,#16482c,#123c24);border:1px solid var(--lime);border-radius:13px;padding:16px;margin-top:6px}
+  .cta h3{font-size:13px;color:var(--lime);font-weight:800;margin-bottom:6px}
+  .cta p{font-size:13px;line-height:1.75;color:var(--ink)}
+  .again{margin-top:20px;width:100%;background:transparent;border:1px solid var(--line);color:var(--ink);
+    padding:13px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .12s}
+  .again:hover{border-color:var(--lime)}
+  .share-hint{margin-top:15px;font-size:12px;color:var(--mut);line-height:1.7;text-align:center}
+
+  .fade{animation:fade .26s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.fade{animation:none}.start,.opt,.again{transition:none}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="topbar"><span class="ball"></span><span>SCORE DIAGNOSIS / 18H</span></div>
+  <div class="inner">
+
+    <section id="start">
+      <div class="eyebrow">スコア伸び悩み診断 / 全7問</div>
+      <h1>あなたのスコアが<br><span class="u">止まっている原因</span>、<br>当てます。</h1>
+      <p class="lead">練習量は足りているのに、スコアが頭打ち。原因はスイングではなく「伸び悩みのタイプ」にあるかもしれません。7問の直感で、あなたの壁を特定します。</p>
+      <button class="start" onclick="start()">診断をはじめる</button>
+      <div class="meta">所要 約40秒 ／ 選ぶだけ ／ 結果は4タイプ</div>
+    </section>
+
+    <section id="quiz" style="display:none">
+      <div class="prog" id="prog"></div>
+      <div class="qnum" id="qnum"></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+    </section>
+
+    <section id="result" class="result">
+      <div class="res-eyebrow">YOUR TYPE</div>
+      <div class="badge" id="badge">⛳</div>
+      <div class="res-type" id="resType">—</div>
+      <div class="res-tag" id="resTag"></div>
+      <p class="desc" id="desc"></p>
+      <div class="block"><h3>つまずきの正体</h3><p id="cause"></p></div>
+      <div class="block"><h3>次の練習でやること</h3><p id="fix"></p></div>
+      <div class="cta"><h3>💡 タイプ共通の近道</h3><p>「感覚」で打つのをやめて、自分の番手ごとの“本当のキャリー”を一度数字で知ると、ミスの傾向が一気に見えます。最近は練習場に置ける弾道測定器が5万円台からあります。</p></div>
+      <button class="again" onclick="reset()">もう一度診断する</button>
+      <p class="share-hint">結果をスクショして「#スコア伸び悩み診断」で投稿してみてください。<br>あなたは何タイプでしたか？</p>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  const TYPES={
+    direction:{name:"方向性ばらつき型",emoji:"🎯",color:"var(--lime)",tag:"飛ぶけど曲がるタイプ",
+      desc:"距離は出ているのに、左右のブレでスコアを損しているタイプです。OBや林からのリカバリーで叩くパターンが多めです。",
+      cause:"フェースの向きと軌道が安定せず、ナイスショットとミスの振れ幅が大きい状態。当たりの「良し悪し」を感覚で判断していると、原因が特定できません。",
+      fix:"ドライバーで飛距離を狙う前に、7割スイングで「方向の再現性」を作る練習を。10球連続で同じ方向に打てるかをチェックしましょう。"},
+    distance:{name:"距離感ぼんやり型",emoji:"📏",color:"var(--lime)",tag:"番手の距離が曖昧なタイプ",
+      desc:"ショット自体は悪くないのに、グリーンを狙うと手前・奥に外す。距離のミスでパー％を落としているタイプです。",
+      cause:"自分の番手ごとの“本当のキャリー”を把握できていないのが原因。『7番=150ヤード』のような思い込みと実測がズレているケースが大半です。",
+      fix:"まず各番手の実測キャリーを把握すること。これが分かるだけで、ピンまで何番か迷わなくなり、距離のミスが激減します。"},
+    short:{name:"アプローチ・パター放置型",emoji:"🟢",color:"var(--lime)",tag:"100ヤード以内で崩れるタイプ",
+      desc:"ロングゲームは練習するのに、グリーン周りは練習不足。寄せとパットでスコアを溶かしているタイプです。",
+      cause:"スコアの過半はグリーン周りで決まるのに、練習の大半をフルショットに使っている配分ミス。一番伸びしろが大きい領域を放置しています。",
+      fix:"練習時間の半分をアプローチとパターに回しましょう。特に『50ヤード以内の距離感』と『1.5mのショートパット』が即効性ありです。"},
+    mental:{name:"メンタル・マネジメント型",emoji:"🧠",color:"var(--lime)",tag:"技術より戦略で損するタイプ",
+      desc:"練習場では打てるのに、コースで崩れる。技術より『判断』と『崩れた後の対応』でスコアを落としているタイプです。",
+      cause:"無理な番手選択や、1つのミスを取り返そうとする攻めが原因。実力ではなくコースマネジメントの問題で、伸びしろは大きいです。",
+      fix:"『刻む勇気』を持つこと。狙う場所をピンではなくグリーンセンターに変えるだけでスコアは縮みます。ミス後の1打を冷静に置く練習を。"}
+  };
+
+  const QS=[
+    {q:"スコアを崩す一番の原因は？",a:[
+      ["OBや大きく曲がるミス",{direction:2}],
+      ["グリーンを手前・奥に外す",{distance:2}],
+      ["寄せやパットのミス",{short:2}],
+      ["コースで急に崩れる",{mental:2}]]},
+    {q:"自分の7番アイアンの“実測キャリー”は？",a:[
+      ["正確に知っている",{direction:1,short:1}],
+      ["だいたい（思い込みかも）",{distance:2}],
+      ["測ったことがない",{distance:2,mental:1}]]},
+    {q:"練習場で一番時間を使うのは？",a:[
+      ["ドライバー・フルショット",{short:2}],
+      ["アイアンの方向・距離",{direction:1,distance:1}],
+      ["アプローチ・パター",{mental:1}]]},
+    {q:"ナイスショットの後にやりがちなのは？",a:[
+      ["気を良くして次も強振",{direction:2,mental:1}],
+      ["同じ感覚を再現しようとする",{distance:1}],
+      ["特に意識しない",{short:1}]]},
+    {q:"コースで「あ、やった」と思う瞬間は？",a:[
+      ["打った瞬間に曲がるのが分かる",{direction:2}],
+      ["距離が合わず池やバンカー",{distance:2}],
+      ["グリーン周りでザックリ・トップ",{short:2}],
+      ["叩いて頭が真っ白になる",{mental:2}]]},
+    {q:"ミスを1つすると、その後は？",a:[
+      ["取り返そうと無理を狙う",{mental:2}],
+      ["距離感が分からなくなる",{distance:1}],
+      ["とりあえず前に出す",{short:1,direction:1}]]},
+    {q:"スコアを縮めるために今いちばん欲しいのは？",a:[
+      ["まっすぐ飛ばす安定感",{direction:2}],
+      ["正確な距離の把握",{distance:2}],
+      ["寄せ・パットの上達",{short:2}],
+      ["崩れない判断力",{mental:2}]]},
+  ];
+
+  let qi=0, score={direction:0,distance:0,short:0,mental:0};
+  function start(){
+    document.getElementById('start').style.display='none';
+    document.getElementById('quiz').style.display='block';
+    qi=0;score={direction:0,distance:0,short:0,mental:0};renderProg();renderQ();
+  }
+  function renderProg(){const p=document.getElementById('prog');p.innerHTML='';for(let i=0;i<QS.length;i++){const b=document.createElement('i');if(i<qi)b.className='on';p.appendChild(b);}}
+  function renderQ(){
+    const cur=QS[qi];const quiz=document.getElementById('quiz');
+    quiz.classList.remove('fade');void quiz.offsetWidth;quiz.classList.add('fade');
+    document.getElementById('qnum').textContent='Q'+(qi+1)+' / '+QS.length;
+    document.getElementById('qtext').textContent=cur.q;
+    const o=document.getElementById('opts');o.innerHTML='';
+    cur.a.forEach(([label,pts])=>{const b=document.createElement('button');b.className='opt';b.textContent=label;b.onclick=()=>choose(pts);o.appendChild(b);});
+  }
+  function choose(pts){for(const k in pts)score[k]+=pts[k];qi++;renderProg();if(qi<QS.length)renderQ();else showResult();}
+  function showResult(){
+    document.getElementById('quiz').style.display='none';
+    const res=document.getElementById('result');res.style.display='block';res.classList.add('fade');
+    const order=Object.keys(score).sort((a,b)=>score[b]-score[a]);
+    const top=TYPES[order[0]];
+    document.getElementById('resType').textContent=top.name;
+    document.getElementById('resTag').textContent=top.tag;
+    document.getElementById('badge').textContent=top.emoji;
+    document.getElementById('desc').textContent=top.desc;
+    document.getElementById('cause').textContent=top.cause;
+    document.getElementById('fix').textContent=top.fix;
+  }
+  function reset(){document.getElementById('result').style.display='none';document.getElementById('start').style.display='block';}
+</script>
+</body>
+</html>

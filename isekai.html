@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ズバリ、あなたの転生先は… ／ 異世界転生 職業診断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&family=Klee+One:wght@400;600&family=Yusei+Magic&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#E4D8BD;
+    --paper:#F2EAD6;
+    --paper-edge:#D8C6A0;
+    --ink:#39301F;
+    --ink-soft:#7A6A4E;
+    --line:#C6B187;
+    --gold:#B0863A;
+    --arcane:#5C7A6A;
+    --seal:#9C4334;
+    --seal-soft:#C16A57;
+    --f-display:'Kaisei Decol','Yu Mincho',serif;
+    --f-hand:'Yusei Magic','Klee One',sans-serif;
+    --f-body:'Klee One','Hiragino Maru Gothic ProN',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{min-height:100%}
+  body{
+    font-family:var(--f-body);
+    color:var(--ink);
+    min-height:100dvh;
+    background:radial-gradient(120% 80% at 50% 0%,var(--paper) 0%,var(--page) 70%,#D2C19A 100%);
+    padding:20px 14px 40px;
+    display:flex;justify-content:center;
+  }
+  .wrap{width:100%;max-width:520px}
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--paper-edge);
+    border-radius:16px;
+    padding:22px 20px;
+    box-shadow:0 10px 30px rgba(80,60,20,.15), inset 0 0 60px rgba(200,170,110,.12);
+  }
+
+  .eyebrow{
+    display:inline-block;font-family:var(--f-hand);font-size:13px;color:#fff;
+    background:var(--arcane);padding:3px 12px;border-radius:20px;letter-spacing:1px;
+  }
+
+  .seal{
+    width:64px;height:64px;border-radius:50%;margin:10px auto 0;
+    background:radial-gradient(circle at 35% 30%,var(--seal-soft),var(--seal));
+    color:#fff8ef;display:flex;align-items:center;justify-content:center;
+    font-family:var(--f-display);font-weight:700;font-size:20px;
+    box-shadow:0 3px 8px rgba(120,40,30,.35);
+    border:2px solid rgba(255,255,255,.35);
+    transform:rotate(-8deg);
+  }
+
+  h1.title{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.35;margin:10px 0 6px}
+  .lead{color:var(--ink-soft);font-size:15px;line-height:1.8;margin:12px 0 4px}
+  .lead b{color:var(--ink)}
+  .note{color:var(--ink-soft);font-size:13px;margin:8px 0 18px}
+
+  .big-btn{
+    width:100%;padding:15px 0;border-radius:12px;border:none;
+    background:var(--seal);color:#fff;
+    font-family:var(--f-display);font-weight:700;font-size:17px;
+    cursor:pointer;transition:all .18s;
+    box-shadow:0 5px 14px rgba(120,40,30,.3);
+  }
+  .big-btn:hover{background:#8a3527}
+  .big-btn.ghost{
+    background:transparent;color:var(--arcane);
+    border:1.5px solid var(--arcane);box-shadow:none;
+  }
+  .big-btn.ghost:hover{background:rgba(92,122,106,.1)}
+
+  .prog{display:flex;gap:5px}
+  .prog i{flex:1;height:6px;border-radius:4px;background:var(--line);opacity:.5;transition:background .25s}
+  .prog i.on{background:var(--arcane);opacity:1}
+
+  .qhead{display:flex;align-items:baseline;gap:8px;margin-top:14px}
+  .qhead .n{font-family:var(--f-hand);color:var(--seal);font-size:16px}
+  .qhead .of{color:var(--ink-soft);font-size:13px}
+  h2.qtext{font-family:var(--f-display);font-weight:700;font-size:21px;line-height:1.5;margin:6px 0 4px}
+  .qsub{color:var(--ink-soft);font-size:13.5px;margin:0 0 16px}
+
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{
+    display:flex;align-items:center;gap:12px;text-align:left;width:100%;
+    padding:14px;border-radius:12px;border:1.5px solid var(--line);
+    background:#fff;color:var(--ink);
+    font-family:var(--f-body);font-size:15.5px;cursor:pointer;
+    transition:all .15s;box-shadow:0 1px 0 rgba(0,0,0,.04);
+  }
+  .opt:hover{border-color:var(--arcane);background:rgba(92,122,106,.10);box-shadow:0 4px 12px rgba(80,60,20,.12)}
+  .opt .e{
+    font-size:20px;width:38px;height:38px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--page);border-radius:50%;
+  }
+
+  .back{
+    margin-top:18px;background:none;border:none;color:var(--ink-soft);
+    font-family:var(--f-body);font-size:14px;cursor:pointer;text-decoration:underline;
+  }
+
+  .res-lead{text-align:center;color:var(--ink-soft);font-size:14px;margin:8px 0 2px}
+  h1.res-name{font-family:var(--f-display);font-weight:700;font-size:25px;line-height:1.45;text-align:center;margin:2px 0}
+  h1.res-name .sub{font-size:17px;color:var(--seal)}
+  .res-copy{font-family:var(--f-hand);text-align:center;color:var(--arcane);font-size:15px;margin:6px 16px 16px;line-height:1.6}
+  .radar-wrap{display:flex;justify-content:center;margin:0 0 6px}
+  .radar-wrap svg{width:100%;max-width:280px}
+  .rarity{text-align:center;font-family:var(--f-hand);color:var(--gold);font-size:15px;margin-bottom:16px}
+
+  .field{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .field .k{flex-shrink:0;width:96px;font-family:var(--f-hand);color:var(--seal);font-size:13.5px;line-height:1.6}
+  .field .v{font-size:14px;line-height:1.7}
+
+  .promptbox{
+    margin-top:22px;border:1.5px dashed var(--gold);border-radius:12px;
+    padding:14px;background:rgba(176,134,58,.07);
+  }
+  .promptbox .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+  .promptbox .head span{font-family:var(--f-hand);color:var(--seal);font-size:15px}
+  .copy-btn{
+    background:var(--seal);color:#fff;border:none;border-radius:8px;padding:7px 14px;
+    font-family:var(--f-body);font-size:13px;cursor:pointer;transition:background .2s;flex-shrink:0;
+  }
+  .copy-btn.done{background:var(--arcane)}
+  .promptbox p{color:var(--ink-soft);font-size:12.5px;margin:0 0 8px;line-height:1.6}
+  .promptbox textarea{
+    width:100%;height:150px;resize:vertical;
+    border:1px solid var(--line);border-radius:8px;padding:10px;
+    font-family:var(--f-body);font-size:12px;line-height:1.6;
+    color:var(--ink);background:var(--paper);
+  }
+
+  .foot{text-align:center;color:var(--ink-soft);font-size:11px;margin-top:18px;opacity:.8}
+  .hidden{display:none}
+  .fade{animation:fade .26s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .fade{animation:none}.opt,.big-btn,.copy-btn,.prog i{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- INTRO -->
+  <section id="intro" class="card">
+    <div class="eyebrow">異世界転生 鑑定書</div>
+    <h1 class="title">ズバリ、<br>あなたの転生先は…</h1>
+    <p class="lead">7つの問いに答えると、あなたが異世界に転生したときの<b>職業</b>を、ちょっと失礼なくらい大胆に決めつけます。</p>
+    <div class="seal">鑑定</div>
+    <p class="note">※結果から、雑誌風ビジュアルを作るための画像生成プロンプトも発行されます。</p>
+    <button class="big-btn" id="startBtn">診断をはじめる</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="card hidden">
+    <div class="prog" id="prog"></div>
+    <div class="qhead">
+      <span class="n" id="qnum"></span>
+      <span class="of" id="qof"></span>
+    </div>
+    <h2 class="qtext" id="qtext"></h2>
+    <p class="qsub" id="qsub"></p>
+    <div class="opts" id="opts"></div>
+    <button class="back" id="backBtn">← 戻る</button>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="card hidden">
+    <div class="eyebrow">鑑定結果</div>
+    <div style="text-align:center;margin:6px 0 2px"><div class="seal">確定</div></div>
+    <p class="res-lead">あなたの転生先は…</p>
+    <h1 class="res-name" id="resName"></h1>
+    <p class="res-copy" id="resCopy"></p>
+    <div class="radar-wrap" id="radarWrap"></div>
+    <div class="rarity" id="resRarity"></div>
+    <div id="fields"></div>
+
+    <div class="promptbox">
+      <div class="head">
+        <span>画像生成プロンプト</span>
+        <button class="copy-btn" id="copyBtn">プロンプトをコピー</button>
+      </div>
+      <p>これを画像生成AIに貼ると、サンプルのような雑誌風ビジュアルが作れます。</p>
+      <textarea id="promptTa" readonly></textarea>
+    </div>
+
+    <div style="margin-top:20px">
+      <button class="big-btn ghost" id="againBtn">もう一度診断する</button>
+    </div>
+  </section>
+
+  <p class="foot">※エンタメ診断です。偏見はジョークとしてお楽しみください。</p>
+</div>
+
+<script>
+/* ---------------- 質問データ ----------------
+   axes: bravery(武) brains(知) gold(財) heart(徳) chaos(我) */
+const Q = [
+  {t:"トラブル発生！ その瞬間あなたは？", s:"ダンジョンで罠が作動した。さあどうする。", o:[
+    {l:"とりあえず突っ込む", e:"⚔️", sc:{bravery:3,chaos:1}},
+    {l:"一旦止まって冷静に分析", e:"🧠", sc:{brains:3}},
+    {l:"気配を消してそっと離脱", e:"🌫️", sc:{brains:1,chaos:2}},
+    {l:"仲間に「任せた！」と投げる", e:"🙌", sc:{chaos:2,gold:1}}]},
+  {t:"パーティーでの定位置は？", s:"戦闘隊形を組むことになった。", o:[
+    {l:"最前線で斬り込む", e:"🗡️", sc:{bravery:3}},
+    {l:"後方から的確に指示", e:"📜", sc:{brains:3}},
+    {l:"裏方で全員を支える", e:"🛡️", sc:{heart:3}},
+    {l:"隊形? 我が道を行く", e:"🦅", sc:{chaos:3}}]},
+  {t:"神様が1つだけ力をくれるなら？", s:"転生特典のガチャタイム。", o:[
+    {l:"圧倒的な武力", e:"💪", sc:{bravery:3}},
+    {l:"あらゆる知恵", e:"📖", sc:{brains:3}},
+    {l:"尽きない財力", e:"💰", sc:{gold:3}},
+    {l:"全方位からのモテ", e:"✨", sc:{chaos:2,heart:1}},
+    {l:"不老不死", e:"♾️", sc:{brains:2,chaos:2}}]},
+  {t:"貴重な休日、どう過ごす？", s:"魔王討伐は明日でいい。", o:[
+    {l:"ひたすら鍛錬・修行", e:"🏋️", sc:{bravery:2,brains:1}},
+    {l:"家で研究と読書", e:"🔬", sc:{brains:3}},
+    {l:"街で散財・グルメ三昧", e:"🍖", sc:{gold:3}},
+    {l:"仲間とワイワイ酒場へ", e:"🍻", sc:{heart:2,chaos:1}},
+    {l:"一人で静かにのんびり", e:"🍵", sc:{chaos:2,heart:1}}]},
+  {t:"つい口にしてしまうセリフは？", s:"あなたの第一声、だいたいこれ。", o:[
+    {l:"「で、結論は？」", e:"🤔", sc:{brains:3}},
+    {l:"「面白そうじゃん！」", e:"😆", sc:{chaos:3}},
+    {l:"「みんな大丈夫…？」", e:"🥺", sc:{heart:3}},
+    {l:"「それ、いくら？」", e:"🪙", sc:{gold:3}},
+    {l:"「ふっ…まだ本気じゃない」", e:"😏", sc:{bravery:2,chaos:1}}]},
+  {t:"手に入れた大金、何に使う？", s:"ドラゴンの宝物庫を発見した。", o:[
+    {l:"装備と武器に全ツッパ", e:"🛡️", sc:{bravery:2,gold:1}},
+    {l:"情報・本・スキルに投資", e:"📚", sc:{brains:3}},
+    {l:"とにかく貯めて、増やす", e:"🏦", sc:{gold:3}},
+    {l:"仲間や街の人に大盤振る舞い", e:"🎁", sc:{heart:3}},
+    {l:"推しと趣味に溶かす", e:"💸", sc:{chaos:3}}]},
+  {t:"絶体絶命に追い込まれた時は？", s:"HPは残りわずか。さあ本性が出る。", o:[
+    {l:"燃える。むしろ好機", e:"🔥", sc:{bravery:3,chaos:1}},
+    {l:"冷静に活路を計算する", e:"♟️", sc:{brains:3}},
+    {l:"仲間を頼り、助けを呼ぶ", e:"📣", sc:{heart:3}},
+    {l:"一旦逃げて立て直す", e:"🏃", sc:{chaos:2,brains:1}},
+    {l:"金で解決できないか考える", e:"🤝", sc:{gold:3}}]},
+];
+
+/* ---------------- 職業データ ---------------- */
+const JOBS = [
+  {id:"yusha", name:"初手で無双して即飽きる勇者", sub:"(三日坊主)",
+   copy:"始まりだけは世界一かっこいい、持続しないチート",
+   className:"勇者", rarity:"★★★★☆（最初だけ★5）",
+   radar:{arm:96,int:45,mag:60,cha:88,luck:70,men:40},
+   cheat:"開幕だけ全能力3倍《ご祝儀バフ》",
+   skills:"初手必殺 / 勢いで突破 / 中盤からの謎の失速",
+   role:"アタッカー兼ムードメーカー（中盤で離脱しがち）",
+   weakness:"飽き。長期戦と地道な作業に弱い",
+   fate:"魔王を倒した翌週、別の趣味を見つけて旅に出る",
+   quote:"とりあえずやってみっか！",
+   disease:"新しいこと開始3日でテンションが切れる",
+   centerScene:"勇者の剣を高く掲げ初手で敵をなぎ倒している",
+   scenes:"開幕の大技/中盤あくびしている/装備だけ無駄に豪華",
+   af:{bravery:3,brains:0,gold:1,heart:0,chaos:2}},
+  {id:"seijo", name:"全パーティーを養う回復職・聖女", sub:"(自称)",
+   copy:"誰も頼んでないのに全員の世話を焼く慈愛の塊",
+   className:"聖女／ヒーラー", rarity:"★★★★★（介護度MAX）",
+   radar:{arm:35,int:70,mag:90,cha:78,luck:65,men:92},
+   cheat:"範囲全回復＆メンタルケア《おせっかいオーラ》",
+   skills:"全体回復 / 気配り察知 / 自己犠牲（要治療）",
+   role:"支援の要。いないとパーティーが壊滅する",
+   weakness:"自分のケアだけ後回し。気づくと一番ボロボロ",
+   fate:"全員を看取り、最後に自分を回復し忘れる",
+   quote:"みんな、ちゃんと食べてる？",
+   disease:"人の心配ばかりで自分の予定が空っぽ",
+   centerScene:"仲間たちに囲まれ温かい回復魔法をかけている",
+   scenes:"全員の傷を手当て/夜中まで看病/自分の分のご飯がない",
+   af:{bravery:0,brains:1,gold:0,heart:3,chaos:1}},
+  {id:"kenja", name:"裏で全部操る賢者・実質ラスボス", sub:"",
+   copy:"表に出ないのに、なぜか全部この人の手のひら",
+   className:"賢者／策士", rarity:"★★★★★（黒幕レア）",
+   radar:{arm:40,int:99,mag:95,cha:72,luck:80,men:88},
+   cheat:"未来予測と布石《全部読んでた》",
+   skills:"情報網 / 心理誘導 / 先回りの一手",
+   role:"影の司令塔。勇者すら駒のひとつ",
+   weakness:"策が深すぎて味方にも怖がられる",
+   fate:"死後、実は全部仕込みだったと判明し伝説になる",
+   quote:"ふむ、想定の範囲内だ。",
+   disease:"何手も先を読みすぎて今この瞬間を楽しめない",
+   centerScene:"薄暗い書斎で盤上の駒を静かに動かしている",
+   scenes:"ローソク一本で計画立案/陰から戦況を観察/勝った後も無表情",
+   af:{bravery:0,brains:3,gold:1,heart:0,chaos:2}},
+  {id:"shonin", name:"金勘定だけは天才の商人ギルドマスター", sub:"",
+   copy:"魔王より相場が気になる、歩く損益計算書",
+   className:"商人／ギルドマスター", rarity:"★★★★☆（資産価値★5）",
+   radar:{arm:45,int:88,mag:30,cha:85,luck:75,men:80},
+   cheat:"あらゆる物の適正価格が見える《値踏みの瞳》",
+   skills:"交渉 / 仕入れ / 利ざやの嗅覚",
+   role:"資金とロジを握る実権者。戦わずして勝つ",
+   weakness:"感動の場面でも値段を考えてしまう",
+   fate:"大商会を築き、墓石まで相見積もりを取る",
+   quote:"それ、いくらで売れる？",
+   disease:"あらゆる体験を費用対効果で評価する",
+   centerScene:"豪華な商館で帳簿と金貨に囲まれ取引している",
+   scenes:"値切り交渉/在庫の山に満足げ/勇者にも請求書",
+   af:{bravery:0,brains:2,gold:3,heart:0,chaos:0}},
+  {id:"senshi", name:"考える前に拳が出る脳筋戦士", sub:"",
+   copy:"作戦会議? 殴ればだいたい解決する派",
+   className:"戦士／バーサーカー", rarity:"★★★★☆（火力だけ★5）",
+   radar:{arm:99,int:28,mag:20,cha:70,luck:60,men:85},
+   cheat:"ダメージを受けるほど強くなる《逆ギレ強化》",
+   skills:"全力一撃 / 痛みを忘れる / 細かいこと気にしない",
+   role:"最前線の壁にして矛。とにかく頼れる",
+   weakness:"頭脳戦と書類仕事で完全に停止する",
+   fate:"最後まで殴り続け、笑って散る",
+   quote:"細けぇこたぁいい！",
+   disease:"悩む前に体が動いてしまう",
+   centerScene:"巨大な敵に正面から拳でぶつかっている",
+   scenes:"罠を力で破壊/作戦中に寝る/傷だらけで笑顔",
+   af:{bravery:3,brains:0,gold:0,heart:1,chaos:0}},
+  {id:"onmitsu", name:"誰にも正体を知られない隠密・諜報員", sub:"",
+   copy:"気づけば情報を全部握っている、影の聞き上手",
+   className:"隠密／密偵", rarity:"★★★★★（存在感マイナス）",
+   radar:{arm:65,int:92,mag:55,cha:50,luck:78,men:86},
+   cheat:"気配を完全に消す《空気化》",
+   skills:"潜入 / 情報収集 / 痕跡を残さない",
+   role:"戦況を裏で動かす情報の心臓",
+   weakness:"存在感が薄すぎて集合写真で見切れる",
+   fate:"誰にも知られぬまま、静かに役目を終える",
+   quote:"…で、その話、続きは？",
+   disease:"会議では黙っているのに全部把握している",
+   centerScene:"屋根の上から街の動きを静かに見張っている",
+   scenes:"物陰で立ち聞き/気配なく現れる/正体を聞かれてはぐらかす",
+   af:{bravery:1,brains:3,gold:1,heart:0,chaos:1}},
+  {id:"ginyu", name:"ノリだけで国を動かすパリピ吟遊詩人", sub:"",
+   copy:"計画ゼロ、勢い無限。なぜか毎回うまくいく",
+   className:"吟遊詩人／盛り上げ役", rarity:"★★★★☆（テンション★5）",
+   radar:{arm:50,int:55,mag:70,cha:99,luck:90,men:60},
+   cheat:"場の空気を支配する《全員巻き込みバフ》",
+   skills:"即興トーク / 人脈無限 / ノリで突破",
+   role:"士気とコネで戦況を変えるムードの王",
+   weakness:"細部と事務処理が壊滅的。明日のことは知らない",
+   fate:"伝説の宴を開いた夜、語り草として歴史に残る",
+   quote:"とりまみんなで行こ！",
+   disease:"勢いで予定を詰め込みすぎて後で死ぬ",
+   centerScene:"広場で大勢を巻き込み陽気に演奏している",
+   scenes:"酒場の中心で歌う/初対面と即親友/計画書は白紙",
+   af:{bravery:0,brains:0,gold:1,heart:2,chaos:3}},
+  {id:"renkin", name:"家から出ない引きこもり錬金術師", sub:"(在宅最強)",
+   copy:"外に出ない代わりに、世界を変える物を作る天才",
+   className:"錬金術師／研究者", rarity:"★★★★★（在宅レア）",
+   radar:{arm:25,int:98,mag:96,cha:35,luck:65,men:75},
+   cheat:"理論上なんでも作れる《無限工房》",
+   skills:"調合 / 徹夜研究 / 人と会わない工夫",
+   role:"拠点から世界を支える生産の神",
+   weakness:"外出と対人。日光に当たると弱る",
+   fate:"工房に引きこもったまま、伝説の発明を残す",
+   quote:"それ、家で作れるよ。",
+   disease:"予定があると前日からぐったりする",
+   centerScene:"薬品と魔法陣に囲まれた工房で発明に没頭している",
+   scenes:"散らかった工房で徹夜/外出を全力で回避/通販で素材を買う",
+   af:{bravery:0,brains:3,gold:0,heart:0,chaos:3}},
+  {id:"okami", name:"みんなのお母さん・宿屋の女将", sub:"",
+   copy:"勇者一行の胃袋と財布を握る、最強の後方支援",
+   className:"宿屋の女将／世話役", rarity:"★★★★★（安心感★5）",
+   radar:{arm:55,int:78,mag:40,cha:82,luck:72,men:90},
+   cheat:"誰でも腹を満たし回復させる《おふくろの味》",
+   skills:"段取り / 家計管理 / 全員の事情を把握",
+   role:"拠点の主にして精神的支柱",
+   weakness:"面倒を見すぎて自分の時間がない",
+   fate:"街一番の老舗を遺し、孫に看取られる",
+   quote:"ちゃんと食べていきな。",
+   disease:"頼まれてもいない世話をつい焼く",
+   centerScene:"賑やかな宿屋で冒険者たちに料理をふるまっている",
+   scenes:"大鍋でまかない/宿賃をきっちり徴収/全員の悩み相談所",
+   af:{bravery:0,brains:1,gold:2,heart:3,chaos:0}},
+  {id:"tozoku", name:"運だけで生き延びる強運の盗賊", sub:"",
+   copy:"実力は微妙、なのに毎回なぜか助かる謎の星の下",
+   className:"盗賊／トレジャーハンター", rarity:"★★★☆☆（運だけ★5）",
+   radar:{arm:60,int:58,mag:45,cha:75,luck:99,men:55},
+   cheat:"ピンチで必ずいい目が出る《天運》",
+   skills:"宝探し / 危機回避 / 行き当たりばったり",
+   role:"ムード担当のトラブルメーカー兼幸運札",
+   weakness:"計画性ゼロ。運が切れた日が本当に怖い",
+   fate:"最後まで運だけで切り抜け、なぜか大往生",
+   quote:"なんとかなるっしょ！",
+   disease:"ノリと運頼みで物事を進めてしまう",
+   centerScene:"罠だらけの遺跡を奇跡的にかいくぐり宝箱を開けている",
+   scenes:"間一髪で罠を回避/ギャンブルで大勝ち/計画は立てない",
+   af:{bravery:1,brains:0,gold:2,heart:0,chaos:3}},
+  {id:"butoka", name:"求道一筋ストイック武闘家", sub:"",
+   copy:"強さの探求が生きがい、休むという概念がない",
+   className:"武闘家／修行僧", rarity:"★★★★★（精神力★5）",
+   radar:{arm:92,int:80,mag:50,cha:60,luck:62,men:99},
+   cheat:"限界を超え続ける《不屈の精神》",
+   skills:"鍛錬 / 自己管理 / 痛みの制御",
+   role:"パーティーの精神的支柱にして最終兵器",
+   weakness:"ストイックすぎて周りがついていけない",
+   fate:"頂を極めた末、満足げに山へ消える",
+   quote:"まだ足りん。",
+   disease:"休むことに罪悪感を覚える",
+   centerScene:"滝に打たれながら静かに精神統一している",
+   scenes:"夜明け前から鍛錬/誘いを断り修行/弟子に厳しい",
+   af:{bravery:3,brains:2,gold:0,heart:1,chaos:0}},
+  {id:"madoshi", name:"不老不死を求めた狂気の魔導士", sub:"",
+   copy:"知への執着が振り切れた、ロマンと厄災の同居人",
+   className:"大魔導士／禁忌の探求者", rarity:"★★★★★（禁忌レア）",
+   radar:{arm:55,int:97,mag:99,cha:48,luck:58,men:70},
+   cheat:"禁呪すら使いこなす《際限なき探求》",
+   skills:"禁術 / 一点集中 / 周囲の心配を無視",
+   role:"切り札にして爆弾。味方ですら油断できない",
+   weakness:"のめり込むと寝食を忘れ周りが見えない",
+   fate:"ついに不老不死を得て、永遠に研究し続ける",
+   quote:"あと一歩で真理に届く。",
+   disease:"興味のあることに過集中して時間を溶かす",
+   centerScene:"禁断の魔法陣の中心で巨大な魔力を操っている",
+   scenes:"深夜の実験室で高笑い/止められても止まらない/成果はガチで凄い",
+   af:{bravery:2,brains:3,gold:0,heart:0,chaos:3}},
+];
+
+/* ---------------- スコア計算 ---------------- */
+function pickJob(answers){
+  const ax={bravery:0,brains:0,gold:0,heart:0,chaos:0};
+  answers.forEach(o=>{ if(o) Object.entries(o.sc).forEach(([k,v])=>{ax[k]+=v;}); });
+  let best=JOBS[0], bestScore=-1;
+  JOBS.forEach(j=>{
+    let s=0;
+    Object.keys(ax).forEach(k=>{ s+=ax[k]*(j.af[k]||0); });
+    if(s>bestScore){ bestScore=s; best=j; }
+  });
+  return best;
+}
+
+/* ---------------- 画像生成プロンプト ---------------- */
+function buildPrompt(j){
+  const r=j.radar;
+  return `タイトル「ズバリあなたの転生先は…」 16:9
+
+【結論】${j.name}${j.sub}
+〜${j.copy}〜
+
+中央：${j.className}が異世界で${j.centerScene}象徴的なシーンを、ファンタジー/RPG世界のトンマナで大きく配置する。
+
+周囲に以下を雑誌特集風に散りばめる（イラスト・図解優先、文字は最小限）：
+- 転生先の基本クラス：${j.className}（レアリティ ${j.rarity}・規格外感）／★評価つき
+- 能力レーダーチャート（腕力${r.arm} / 知力${r.int} / 魔力${r.mag} / カリスマ${r.cha} / 運${r.luck} / メンタル${r.men}）
+- 転生プロフィール（世界観・種族・身分・所属ギルド・パーティー構成を、この職業に合うようそれっぽく創作）
+- 決め台詞・口癖ランキング（例：「${j.quote}」など、この職業らしい口癖を3つ）
+- パーティー相関図（仲間・ライバル・推し・宿敵を、この人物を中心にコミカルに）
+- 冒険の名場面カット（${j.scenes} など、戦闘/拠点/買い物/休日/仲間との絡みを数コマ、コミカルに）
+- レベル上げ年表（転生直後〜現在まで波乱万丈に）
+- 元の世界（現世）との共通点 比較表
+- 転生してもバレる職業病：${j.disease}
+- 次の転生への申し送りメモ
+- 異世界からあなたへの一言メッセージ
+
+このキャラの核：チート能力＝${j.cheat}／スキル＝${j.skills}／パーティーでの役割＝${j.role}／弱点＝${j.weakness}／最期＝${j.fate}
+
+トンマナ：転生診断ボード × 雑誌特集 × 性格診断ページ の中間。少し失礼で決めつけ感が強く、でも妙に当たっている温度感。やや煽り気味でユーモアあり。やや誇張したぶっ飛んだキャラ解剖にする。
+
+スタイル：soft muted color palette, gentle handwritten guidebook aesthetic, humorous Japanese isekai reincarnation job diagnosis infographic, fantasy RPG class profile board, biased character build sheet, magazine-style Japanese layout, dense but readable editorial spread, ability radar chart, level-up timeline, handwritten annotations, sticky notes, comic adventure side scenes, playful but accurate personality breakdown, decisive and biased humor, colorful Japanese magazine infographic`;
+}
+
+/* ---------------- レーダーチャート ---------------- */
+const SVG_NS="http://www.w3.org/2000/svg";
+function radarSVG(r){
+  const labels=[["腕力",r.arm],["知力",r.int],["魔力",r.mag],["カリスマ",r.cha],["運",r.luck],["メンタル",r.men]];
+  const cx=130, cy=120, rad=78;
+  const pt=(v,i)=>{
+    const a=(-90+i*60)*(Math.PI/180);
+    const rr=rad*(v/100);
+    return [cx+rr*Math.cos(a), cy+rr*Math.sin(a)];
+  };
+  const ring=f=>labels.map((_,i)=>{
+    const a=(-90+i*60)*(Math.PI/180);
+    return (cx+rad*f*Math.cos(a))+","+(cy+rad*f*Math.sin(a));
+  }).join(" ");
+
+  const css=getComputedStyle(document.documentElement);
+  const cLine=css.getPropertyValue("--line").trim();
+  const cArcane=css.getPropertyValue("--arcane").trim();
+  const cInk=css.getPropertyValue("--ink").trim();
+
+  const svg=document.createElementNS(SVG_NS,"svg");
+  svg.setAttribute("viewBox","0 0 260 240");
+  svg.setAttribute("role","img");
+  svg.setAttribute("aria-label","能力レーダーチャート");
+
+  [0.34,0.67,1].forEach(f=>{
+    const p=document.createElementNS(SVG_NS,"polygon");
+    p.setAttribute("points",ring(f));
+    p.setAttribute("fill","none");
+    p.setAttribute("stroke",cLine);
+    p.setAttribute("stroke-width","1");
+    svg.appendChild(p);
+  });
+  labels.forEach((_,i)=>{
+    const [x,y]=pt(100,i);
+    const l=document.createElementNS(SVG_NS,"line");
+    l.setAttribute("x1",cx); l.setAttribute("y1",cy);
+    l.setAttribute("x2",x);  l.setAttribute("y2",y);
+    l.setAttribute("stroke",cLine);
+    l.setAttribute("stroke-width","1");
+    svg.appendChild(l);
+  });
+  const dataPoly=document.createElementNS(SVG_NS,"polygon");
+  dataPoly.setAttribute("points",labels.map(([,v],i)=>pt(v,i).join(",")).join(" "));
+  dataPoly.setAttribute("fill",cArcane);
+  dataPoly.setAttribute("fill-opacity","0.32");
+  dataPoly.setAttribute("stroke",cArcane);
+  dataPoly.setAttribute("stroke-width","2");
+  svg.appendChild(dataPoly);
+
+  labels.forEach(([name],i)=>{
+    const [x,y]=pt(122,i);
+    const t=document.createElementNS(SVG_NS,"text");
+    t.setAttribute("x",x); t.setAttribute("y",y);
+    t.setAttribute("font-size","12");
+    t.setAttribute("fill",cInk);
+    t.setAttribute("text-anchor","middle");
+    t.setAttribute("dominant-baseline","middle");
+    t.style.fontFamily="var(--f-hand)";
+    t.textContent=name;
+    svg.appendChild(t);
+  });
+  return svg;
+}
+
+/* ---------------- 画面制御 ---------------- */
+const el = id => document.getElementById(id);
+const screens = {intro:el("intro"), quiz:el("quiz"), result:el("result")};
+
+let idx=0;
+let answers=new Array(Q.length).fill(null);
+let job=null;
+let copiedTimer=null;
+
+function show(name){
+  Object.entries(screens).forEach(([k,node])=>{
+    node.classList.toggle("hidden", k!==name);
+  });
+  const node=screens[name];
+  node.classList.remove("fade"); void node.offsetWidth; node.classList.add("fade");
+}
+
+function renderProg(){
+  const p=el("prog"); p.innerHTML="";
+  for(let i=0;i<Q.length;i++){
+    const b=document.createElement("i");
+    if(i<=idx) b.className="on";
+    p.appendChild(b);
+  }
+}
+
+function renderQ(){
+  renderProg();
+  const cur=Q[idx];
+  el("qnum").textContent="第"+(idx+1)+"問";
+  el("qof").textContent="/ 全"+Q.length+"問";
+  el("qtext").textContent=cur.t;
+  el("qsub").textContent=cur.s;
+  const o=el("opts"); o.innerHTML="";
+  cur.o.forEach(opt=>{
+    const b=document.createElement("button");
+    b.className="opt";
+    const e=document.createElement("span");
+    e.className="e"; e.textContent=opt.e;
+    const l=document.createElement("span");
+    l.textContent=opt.l;
+    b.appendChild(e); b.appendChild(l);
+    b.addEventListener("click",()=>choose(opt));
+    o.appendChild(b);
+  });
+}
+
+function choose(opt){
+  answers[idx]=opt;
+  if(idx < Q.length-1){
+    idx++;
+    renderQ();
+  } else {
+    job=pickJob(answers);
+    renderResult();
+    show("result");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+}
+
+function field(k,v){
+  const wrap=document.createElement("div");
+  wrap.className="field";
+  const kk=document.createElement("div");
+  kk.className="k"; kk.textContent=k;
+  const vv=document.createElement("div");
+  vv.className="v"; vv.textContent=v;
+  wrap.appendChild(kk); wrap.appendChild(vv);
+  return wrap;
+}
+
+function renderResult(){
+  const name=el("resName");
+  name.textContent=job.name;
+  if(job.sub){
+    const s=document.createElement("span");
+    s.className="sub"; s.textContent=" "+job.sub;
+    name.appendChild(s);
+  }
+  el("resCopy").textContent="〜"+job.copy+"〜";
+  el("resRarity").textContent=job.rarity;
+
+  const rw=el("radarWrap"); rw.innerHTML="";
+  rw.appendChild(radarSVG(job.radar));
+
+  const f=el("fields"); f.innerHTML="";
+  f.appendChild(field("チート能力", job.cheat));
+  f.appendChild(field("スキル構成", job.skills));
+  f.appendChild(field("パーティーでの役割", job.role));
+  f.appendChild(field("弱点", job.weakness));
+  f.appendChild(field("最期", job.fate));
+  f.appendChild(field("転生してもバレる職業病", job.disease));
+
+  el("promptTa").value=buildPrompt(job);
+}
+
+function reset(){
+  answers=new Array(Q.length).fill(null);
+  idx=0; job=null;
+  const btn=el("copyBtn");
+  btn.textContent="プロンプトをコピー"; btn.classList.remove("done");
+  if(copiedTimer){ clearTimeout(copiedTimer); copiedTimer=null; }
+  show("intro");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+el("startBtn").addEventListener("click",()=>{ idx=0; renderQ(); show("quiz"); });
+el("backBtn").addEventListener("click",()=>{
+  if(idx>0){ idx--; renderQ(); } else { show("intro"); }
+});
+el("againBtn").addEventListener("click",reset);
+
+el("promptTa").addEventListener("focus",e=>e.target.select());
+
+el("copyBtn").addEventListener("click",async ()=>{
+  const ta=el("promptTa");
+  const btn=el("copyBtn");
+  const markCopied=()=>{
+    btn.textContent="コピーしました！";
+    btn.classList.add("done");
+    if(copiedTimer) clearTimeout(copiedTimer);
+    copiedTimer=setTimeout(()=>{
+      btn.textContent="プロンプトをコピー";
+      btn.classList.remove("done");
+    },1800);
+  };
+  try{
+    await navigator.clipboard.writeText(ta.value);
+    markCopied();
+  }catch(_){
+    // iOS Safari など、クリップボードAPIが使えない場合のフォールバック
+    ta.removeAttribute("readonly");
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    try{ document.execCommand("copy"); markCopied(); }catch(__){}
+    ta.setAttribute("readonly","");
+  }
+});
+</script>
+</body>
+</html>

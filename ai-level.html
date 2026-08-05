@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あなたのAI活用レベル診断</title>
+<meta name="description" content="5つの質問で、あなたのAI活用レベルを4タイプから診断します。所要およそ1分。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F4F2FC;
+    --bg2:#FCFBFE;
+    --card:#FFFFFF;
+    --border:#EAE7F6;
+    --ink:#211F33;
+    --sub:#6C6A80;
+    --faint:#9D9BB0;
+    --brand:#5A4FE0;
+    --brand-soft:#EEECFD;
+    --accent:#5A4FE0;
+    --accent-soft:#EEECFD;
+    --f-display:'Zen Maru Gothic','Hiragino Maru Gothic ProN',sans-serif;
+    --f-body:'Zen Kaku Gothic New','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{min-height:100%}
+  body{
+    min-height:100dvh;
+    background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    font-family:var(--f-body);
+    color:var(--ink);
+    display:flex;justify-content:center;
+    padding:24px 16px 40px;
+  }
+  .shell{width:100%;max-width:440px}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:28px 22px;
+    box-shadow:0 12px 40px -18px rgba(40,30,90,.25);
+  }
+  button{font-family:inherit;cursor:pointer}
+  a{-webkit-tap-highlight-color:transparent}
+  .hidden{display:none}
+
+  /* ---- intro ---- */
+  .eyebrow{font-size:13px;font-weight:700;color:var(--brand);letter-spacing:.04em;margin-bottom:10px}
+  h1.title{font-family:var(--f-display);font-size:30px;line-height:1.35;font-weight:700;margin:0 0 14px}
+  h1.title .b{color:var(--brand)}
+  .lead{font-size:15px;line-height:1.75;color:var(--sub);margin:0 0 22px}
+  .chips{display:grid;gap:8px;margin-bottom:26px}
+  .chip{
+    display:flex;align-items:center;gap:10px;
+    background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:10px 14px;
+  }
+  .chip .emo{font-size:18px}
+  .chip .nm{font-size:14px;font-weight:500}
+  .primary{
+    width:100%;background:var(--brand);color:#fff;border:none;border-radius:14px;
+    padding:16px;font-size:16px;font-weight:700;font-family:var(--f-display);
+    box-shadow:0 10px 24px -10px rgba(90,79,224,.7);
+  }
+
+  /* ---- quiz ---- */
+  .quiz-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .back{background:none;border:none;color:var(--faint);font-size:14px;padding:0}
+  .counter{font-size:14px;font-weight:700;color:var(--ink)}
+  .counter .of{color:var(--faint)}
+  .segments{display:flex;gap:6px;margin-bottom:26px}
+  .segments i{flex:1;height:6px;border-radius:99px;background:var(--border);transition:background .3s ease}
+  .segments i.on{background:var(--brand)}
+  h2.question{font-family:var(--f-display);font-size:21px;line-height:1.5;font-weight:700;margin:0 0 22px}
+  .options{display:grid;gap:12px}
+  .option{
+    display:flex;align-items:center;gap:13px;text-align:left;width:100%;
+    background:#fff;border:1.5px solid var(--border);border-radius:14px;
+    padding:16px;font-size:15px;line-height:1.5;color:var(--ink);
+    transition:all .18s ease;
+  }
+  .option .radio{
+    flex-shrink:0;width:20px;height:20px;border-radius:99px;
+    border:2px solid var(--faint);transition:all .18s ease;
+  }
+  .option.sel{border-color:var(--brand);background:var(--brand-soft);transform:scale(.99)}
+  .option.sel .radio{border-color:var(--brand);background:var(--brand);box-shadow:inset 0 0 0 3px #fff}
+
+  /* ---- result ---- */
+  .meter{display:flex;gap:6px;margin-bottom:10px}
+  .meter i{flex:1;height:8px;border-radius:99px;background:var(--border);transition:background .5s ease}
+  .meter i.on{background:var(--accent)}
+  .meter i:nth-child(1){transition-delay:0ms}
+  .meter i:nth-child(2){transition-delay:90ms}
+  .meter i:nth-child(3){transition-delay:180ms}
+  .meter i:nth-child(4){transition-delay:270ms}
+  .level-label{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--faint);margin-bottom:20px}
+  .badge{
+    width:76px;height:76px;border-radius:22px;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:16px;font-size:40px;line-height:1;
+    background:var(--accent-soft);
+  }
+  .you-are{font-size:14px;color:var(--sub);margin-bottom:4px}
+  h1.res-name{font-family:var(--f-display);font-size:28px;font-weight:700;margin:0 0 8px;line-height:1.3;color:var(--accent)}
+  .tagline{font-size:15px;font-weight:700;color:var(--ink);margin:0 0 16px}
+  .desc{font-size:15px;line-height:1.8;color:var(--sub);margin:0 0 22px}
+
+  .tips{background:var(--bg1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:22px}
+  .tips h3{font-size:14px;font-weight:700;margin-bottom:12px}
+  .tips ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .tips li{display:flex;gap:11px;font-size:14.5px;line-height:1.6;color:var(--ink)}
+  .tips .dot{
+    flex-shrink:0;width:22px;height:22px;border-radius:99px;
+    background:var(--accent);color:#fff;font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .cta{border:1.5px dashed var(--border);border-radius:16px;padding:18px;text-align:center;margin-bottom:14px}
+  .cta .t{font-size:15px;font-weight:700;margin-bottom:12px}
+  .cta a{
+    display:inline-block;background:var(--accent);color:#fff;text-decoration:none;
+    border-radius:12px;padding:13px 26px;font-size:15px;font-weight:700;font-family:var(--f-display);
+  }
+  .ghost{width:100%;background:none;border:none;color:var(--sub);font-size:14px;font-weight:500;padding:8px}
+
+  .fade{animation:fade .45s ease both}
+  .slide{animation:slide .35s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes slide{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .fade,.slide{animation:none !important}
+    .option,.segments i,.meter i{transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- INTRO -->
+  <section id="intro" class="card fade">
+    <div class="eyebrow">5つの質問でわかる</div>
+    <h1 class="title">あなたの<br><span class="b">AI活用レベル</span>診断</h1>
+    <p class="lead">ふだんのAIとの付き合い方から、あなたのタイプを4つの中から診断します。所要時間はおよそ1分。</p>
+    <div class="chips" id="chips"></div>
+    <button class="primary" id="startBtn">診断をはじめる</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="card hidden">
+    <div class="quiz-top">
+      <button class="back" id="backBtn" aria-label="前へ戻る">← 戻る</button>
+      <span class="counter">質問 <span id="cur"></span> <span class="of">/ <span id="tot"></span></span></span>
+    </div>
+    <div class="segments" id="segments"></div>
+    <div id="qbody">
+      <h2 class="question" id="question"></h2>
+      <div class="options" id="options"></div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="card hidden">
+    <div class="meter" id="meter"></div>
+    <div class="level-label" id="levelLabel"></div>
+    <div class="badge" id="badge"></div>
+    <div class="you-are">あなたは…</div>
+    <h1 class="res-name" id="resName"></h1>
+    <p class="tagline" id="tagline"></p>
+    <p class="desc" id="desc"></p>
+
+    <div class="tips">
+      <h3>これから意識したいこと</h3>
+      <ul id="tips"></ul>
+    </div>
+
+    <div class="cta">
+      <div class="t">もっと詳しく知りたい人へ</div>
+      <a id="ctaLink" href="#" target="_blank" rel="noreferrer">詳しくはこちら →</a>
+    </div>
+
+    <button class="ghost" id="restartBtn">もう一度診断する</button>
+  </section>
+
+</div>
+
+<script>
+const MORE_LINK = "https://brain-market.com/u/anctbbc9077";
+
+const questions = [
+  {q:"AIツール（ChatGPTやClaudeなど）を使う頻度は？", options:[
+    {label:"ほとんど使わない", v:1},
+    {label:"週に数回ほど", v:2},
+    {label:"ほぼ毎日", v:3},
+    {label:"一日に何度も", v:4}]},
+  {q:"ふだんAIをどんなことに使っていますか？", options:[
+    {label:"使ったことがない", v:1},
+    {label:"ちょっとした質問や調べもの", v:2},
+    {label:"文章作成や要約など実務に活用", v:3},
+    {label:"複数の作業を組み合わせて効率化", v:4}]},
+  {q:"プロンプト（指示文）について、当てはまるものは？", options:[
+    {label:"プロンプトという言葉を初めて聞いた", v:1},
+    {label:"思いついたことをそのまま入力する", v:2},
+    {label:"条件を具体的に書くと精度が上がると知っている", v:3},
+    {label:"役割設定や例示などを使い分けている", v:4}]},
+  {q:"AIの回答をどう扱いますか？", options:[
+    {label:"そのまま受け取る、または使わない", v:1},
+    {label:"念のため自分でも確認する", v:2},
+    {label:"内容を検証して必要なら修正する", v:3},
+    {label:"追加で質問しながら精度を高めていく", v:4}]},
+  {q:"新しいAIツールや機能について、あなたは？", options:[
+    {label:"特に興味はない", v:1},
+    {label:"話題になれば気になる", v:2},
+    {label:"自分で調べて試すことがある", v:3},
+    {label:"積極的に試して周りにも共有する", v:4}]},
+];
+
+const results = [
+  {level:1, emoji:"🌱", name:"これからのAI入門者", accent:"#2BAE9E", accentSoft:"#E3F6F2",
+   tagline:"まずは小さく、気軽に触れてみることから。",
+   desc:"AIにはまだ馴染みが薄い段階。でも、それは伸びしろがいちばん大きいということでもあります。難しく考えず、日常の小さな疑問を投げかけるところから始めてみましょう。",
+   tips:["「明日の献立を3つ提案して」など、身近なお願いから試す",
+         "間違いがあっても気にせず、まずは会話する感覚で慣れる",
+         "1日1回、何か1つ質問してみる習慣をつくる"]},
+  {level:2, emoji:"🧭", name:"AI活用ビギナー", accent:"#3B82E0", accentSoft:"#E5F0FD",
+   tagline:"使い方が分かってきた。次は「伝え方」を磨こう。",
+   desc:"AIを使うことには慣れてきた段階。ここから一段上がるカギは、指示の出し方です。何を・どんな形で欲しいかを具体的に伝えると、返ってくる答えの質がぐっと変わります。",
+   tips:["「誰向けに・何文字で・どんなトーンで」を指示に添える",
+         "悪い例も見せて「こういうのは避けて」と伝える",
+         "一度で完璧を狙わず、追加の注文で仕上げていく"]},
+  {level:3, emoji:"⚙️", name:"AI活用の実践者", accent:"#E5892F", accentSoft:"#FBEEDD",
+   tagline:"もう立派な使い手。仕組み化で効果を何倍にも。",
+   desc:"実務でしっかりAIを使いこなせている段階。次の伸びしろは、単発の作業を「型」にすること。よく使う指示をテンプレ化したり、作業の流れごと任せたりすると、効率は大きく跳ね上がります。",
+   tips:["繰り返す作業はプロンプトをテンプレ化して使い回す",
+         "「調べる→下書き→推敲」など一連の流れごと任せる",
+         "回答の根拠を確認し、業務の品質基準に合わせて整える"]},
+  {level:4, emoji:"🚀", name:"AIパイオニア", accent:"#7B3FE4", accentSoft:"#F0E9FD",
+   tagline:"最前線を走る人。次は周りを巻き込む番。",
+   desc:"最新ツールを自ら試し、工夫して使いこなすトップ層です。あなた自身の伸びしろに加えて、知見を共有してチームや周囲の底上げをすることで、影響はさらに大きく広がります。",
+   tips:["うまくいったプロンプトや使い方を周囲に共有する",
+         "複数ツールを組み合わせ、自分だけの作業フローを設計する",
+         "新しい機能はいち早く試し、使いどころを見極める"]},
+];
+
+function levelFromScore(score){
+  if(score<=8) return 0;
+  if(score<=12) return 1;
+  if(score<=16) return 2;
+  return 3;
+}
+
+const el = id => document.getElementById(id);
+const screens = {intro:el("intro"), quiz:el("quiz"), result:el("result")};
+
+let step=0;
+let answers=new Array(questions.length).fill(null);
+let pending=null;
+
+function show(name){
+  Object.entries(screens).forEach(([k,node])=>node.classList.toggle("hidden", k!==name));
+}
+
+function renderIntroChips(){
+  const c=el("chips"); c.innerHTML="";
+  results.forEach(r=>{
+    const d=document.createElement("div");
+    d.className="chip";
+    const e=document.createElement("span"); e.className="emo"; e.textContent=r.emoji;
+    const n=document.createElement("span"); n.className="nm"; n.textContent=r.name;
+    d.appendChild(e); d.appendChild(n);
+    c.appendChild(d);
+  });
+}
+
+function renderSegments(){
+  const s=el("segments"); s.innerHTML="";
+  questions.forEach((_,i)=>{
+    const b=document.createElement("i");
+    if(i<=step) b.className="on";
+    s.appendChild(b);
+  });
+}
+
+function renderQ(){
+  renderSegments();
+  el("cur").textContent=step+1;
+  el("tot").textContent=questions.length;
+  el("question").textContent=questions[step].q;
+
+  const body=el("qbody");
+  body.classList.remove("slide"); void body.offsetWidth; body.classList.add("slide");
+
+  const o=el("options"); o.innerHTML="";
+  questions[step].options.forEach((opt,oi)=>{
+    const b=document.createElement("button");
+    b.className="option";
+    const r=document.createElement("span"); r.className="radio";
+    const l=document.createElement("span"); l.textContent=opt.label;
+    b.appendChild(r); b.appendChild(l);
+    b.addEventListener("click",()=>choose(step,oi,opt.v,b));
+    o.appendChild(b);
+  });
+}
+
+function choose(qi,oi,value,btn){
+  if(pending!==null) return;
+  pending=oi;
+  btn.classList.add("sel");
+  answers[qi]=value;
+  setTimeout(()=>{
+    pending=null;
+    if(qi+1<questions.length){
+      step=qi+1;
+      renderQ();
+    }else{
+      renderResult();
+      show("result");
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+  },300);
+}
+
+function renderResult(){
+  const score=answers.reduce((a,b)=>a+(b||0),0);
+  const r=results[levelFromScore(score)];
+
+  document.documentElement.style.setProperty("--accent", r.accent);
+  document.documentElement.style.setProperty("--accent-soft", r.accentSoft);
+
+  const m=el("meter"); m.innerHTML="";
+  const segs=[];
+  results.forEach(()=>{ const i=document.createElement("i"); m.appendChild(i); segs.push(i); });
+  // 塗りはひと呼吸おいてから走らせる（段差のアニメーションを見せるため）
+  setTimeout(()=>{
+    segs.forEach((seg,i)=>{ if(i <= r.level-1) seg.classList.add("on"); });
+  },120);
+
+  el("levelLabel").textContent="LEVEL "+r.level+" / 4";
+  el("badge").textContent=r.emoji;
+  el("resName").textContent=r.name;
+  el("tagline").textContent=r.tagline;
+  el("desc").textContent=r.desc;
+
+  const t=el("tips"); t.innerHTML="";
+  r.tips.forEach(tip=>{
+    const li=document.createElement("li");
+    const d=document.createElement("span"); d.className="dot"; d.textContent="✓";
+    const s=document.createElement("span"); s.textContent=tip;
+    li.appendChild(d); li.appendChild(s);
+    t.appendChild(li);
+  });
+
+  el("ctaLink").href=MORE_LINK;
+
+  const res=screens.result;
+  res.classList.remove("fade"); void res.offsetWidth; res.classList.add("fade");
+}
+
+function restart(){
+  answers=new Array(questions.length).fill(null);
+  step=0; pending=null;
+  show("intro");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+el("startBtn").addEventListener("click",()=>{ step=0; renderQ(); show("quiz"); });
+el("backBtn").addEventListener("click",()=>{
+  if(step===0){ show("intro"); } else { step--; renderQ(); }
+});
+el("restartBtn").addEventListener("click",restart);
+
+renderIntroChips();
+</script>
+</body>
+</html>

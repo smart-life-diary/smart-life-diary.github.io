@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あなたに向いてる副業タイプ診断</title>
+<style>
+  :root{
+    --bg:#0e1424;
+    --bg2:#141d33;
+    --panel:#16203a;
+    --ink:#eef2fb;
+    --mut:#8a97b5;
+    --line:#2b3958;
+    --gold:#e8c477;
+    --c-write:#5ec6c0;
+    --c-content:#7c8cf0;
+    --c-buy:#f0926a;
+    --c-stock:#c98ad6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{min-height:100%}
+  body{
+    background:radial-gradient(120% 90% at 50% 0%,var(--bg2),var(--bg) 70%);
+    color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;min-height:100dvh;
+  }
+  .card{
+    width:100%;max-width:430px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:22px;
+    box-shadow:0 30px 70px rgba(0,0,0,.5);
+    overflow:hidden;
+    position:relative;
+  }
+  .topbar{
+    display:flex;align-items:center;gap:9px;
+    padding:14px 20px;border-bottom:1px solid var(--line);
+    font-size:11px;letter-spacing:.24em;color:var(--mut);
+    font-family:ui-monospace,Menlo,monospace;text-transform:uppercase;
+  }
+  .compass{width:16px;height:16px;border:2px solid var(--gold);border-radius:50%;position:relative;flex:none}
+  .compass::after{content:"";position:absolute;left:50%;top:2px;width:2px;height:6px;background:var(--gold);transform:translateX(-50%)}
+  .inner{padding:30px 24px 32px}
+
+  .eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.3em;color:var(--gold);margin-bottom:12px}
+  h1{font-size:29px;line-height:1.34;font-weight:900;margin-bottom:14px}
+  h1 .u{background:linear-gradient(transparent 62%,rgba(232,196,119,.35) 62%)}
+  .lead{font-size:14px;line-height:1.85;color:var(--mut);margin-bottom:26px}
+
+  .start{
+    width:100%;border:none;border-radius:13px;cursor:pointer;
+    background:linear-gradient(135deg,var(--gold),#d8a94e);
+    color:#241a06;font-size:17px;font-weight:800;letter-spacing:.05em;padding:16px;
+    font-family:inherit;transition:transform .08s, filter .15s;
+  }
+  .start:hover{filter:brightness(1.06)}
+  .start:active{transform:scale(.985)}
+  .meta{margin-top:18px;font-size:12px;color:var(--mut);text-align:center;letter-spacing:.04em}
+
+  .prog{display:flex;gap:6px;margin-bottom:24px}
+  .prog i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+  .prog i.on{background:var(--gold)}
+  .qnum{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--mut);letter-spacing:.16em;margin-bottom:12px}
+  .qtext{font-size:21px;font-weight:800;line-height:1.5;margin-bottom:24px}
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{
+    border:1px solid var(--line);background:#1b2540;color:var(--ink);
+    text-align:left;padding:15px 16px;font-size:15px;font-weight:600;border-radius:12px;
+    cursor:pointer;font-family:inherit;line-height:1.45;
+    transition:border-color .12s, background .12s, transform .06s;
+  }
+  .opt:hover{border-color:var(--gold);background:#202c4d}
+  .opt:active{transform:scale(.99)}
+
+  .result{display:none}
+  .res-eyebrow{text-align:center;font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.3em;color:var(--mut);margin-bottom:6px}
+  .res-type{text-align:center;font-size:34px;font-weight:900;line-height:1.25;margin-bottom:4px}
+  .res-tag{text-align:center;font-size:13px;color:var(--mut);margin-bottom:20px}
+  .badge{
+    width:84px;height:84px;border-radius:50%;margin:0 auto 18px;
+    display:flex;align-items:center;justify-content:center;font-size:38px;
+    border:2px solid;
+  }
+  .desc{font-size:14px;line-height:1.9;color:var(--ink);margin-bottom:18px}
+  .block{background:#121a30;border:1px solid var(--line);border-radius:13px;padding:16px 16px;margin-bottom:12px}
+  .block h3{font-size:12px;letter-spacing:.12em;color:var(--gold);margin-bottom:8px;font-weight:800}
+  .block p{font-size:13.5px;line-height:1.8;color:var(--ink)}
+  .mix{font-size:12.5px;color:var(--mut);text-align:center;margin:6px 0 2px;line-height:1.7}
+  .again{margin-top:20px;width:100%;background:transparent;border:1px solid var(--line);color:var(--ink);padding:13px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .12s}
+  .again:hover{border-color:var(--gold)}
+  .share-hint{margin-top:15px;font-size:12px;color:var(--mut);line-height:1.7;text-align:center}
+
+  .fade{animation:fade .26s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.fade{animation:none}.start,.opt,.again{transition:none}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="topbar"><span class="compass"></span><span>SIDE-BIZ COMPASS</span></div>
+  <div class="inner">
+
+    <section id="start">
+      <div class="eyebrow">適性診断 / 全7問</div>
+      <h1>あなたに向いてる<br><span class="u">副業タイプ</span>、教えます。</h1>
+      <p class="lead">「何で稼ぐか」より先に、「自分はどれが続くか」。向いてないやり方を選ぶと、人は必ず途中でやめます。7問の直感で、あなたの相性を判定します。</p>
+      <button class="start" onclick="start()">診断をはじめる</button>
+      <div class="meta">所要 約40秒 ／ 選ぶだけ ／ 結果は4タイプ</div>
+    </section>
+
+    <section id="quiz" style="display:none">
+      <div class="prog" id="prog"></div>
+      <div class="qnum" id="qnum"></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+    </section>
+
+    <section id="result" class="result">
+      <div class="res-eyebrow">YOUR TYPE</div>
+      <div class="badge" id="badge">🧭</div>
+      <div class="res-type" id="resType">—</div>
+      <div class="res-tag" id="resTag"></div>
+      <p class="desc" id="desc"></p>
+      <div class="block"><h3>向いている理由</h3><p id="why"></p></div>
+      <div class="block"><h3>最初の一歩</h3><p id="step"></p></div>
+      <div class="mix" id="mix"></div>
+      <button class="again" onclick="reset()">もう一度診断する</button>
+      <p class="share-hint">結果をスクショして「#副業タイプ診断」で投稿してみてください。<br>あなたは何タイプでしたか？</p>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  // 4 types: write(文章/ブログ), content(知見をまとめて売る), buy(物販/せどり), stock(コツコツ仕組み/ストック)
+  const TYPES={
+    write:{name:"発信ライター型",emoji:"✍️",color:"var(--c-write)",tag:"言葉で価値を届けるタイプ",
+      desc:"あなたは、自分の考えや体験を「言葉」にするのが武器になるタイプです。派手な初期投資より、書いて積み上げる方が性に合っています。",
+      why:"頭の中を文章にする抵抗が少なく、コツコツ継続できる素養があります。ブログ・noteのように「書くほど資産が増える」モデルが噛み合います。",
+      step:"まずは無料のnoteかブログで、得意分野の記事を1本。完璧を狙わず、60点で公開する習慣からスタートしましょう。"},
+    content:{name:"コンテンツ販売型",emoji:"📦",color:"var(--c-content)",tag:"知見をまとめて売るタイプ",
+      desc:"あなたは、自分の経験やノウハウを「商品」に変える発想ができるタイプです。教える・まとめることに苦がありません。",
+      why:"人に説明したり、手順を整理するのが得意。テンプレ・プロンプト集・解説noteなど『一度作れば売れ続ける』商品と相性が良いです。",
+      step:"自分が過去につまずいて解決したことを1つ思い出し、その手順を1記事にまとめて有料で出してみましょう。"},
+    buy:{name:"物販・トレード型",emoji:"🔁",color:"var(--c-buy)",tag:"モノやタイミングで動くタイプ",
+      desc:"あなたは、文章でじっくりより「動いて結果を出す」方が向いているタイプです。手を動かす実務に強みがあります。",
+      why:"行動が早く、損益や在庫のような『数字で結果が見える』ものにやりがいを感じます。物販・せどり等、回転で稼ぐモデルが合います。",
+      step:"いきなり仕入れず、まず家の不用品をフリマアプリで売って『売れる感覚』を1回体験してみましょう。"},
+    stock:{name:"仕組み構築型",emoji:"⚙️",color:"var(--c-stock)",tag:"裏側をコツコツ作るタイプ",
+      desc:"あなたは、目立つより「仕組みを整えて自動で回す」のが好きなタイプです。地道な設計・改善が苦になりません。",
+      why:"派手さより継続と改善で力を発揮します。ツール作り・自動化・サイト運用など『手間を仕組みに変える』副業が向いています。",
+      step:"まずノーコードで小さなツールやテンプレを1つ作り、自分の作業を1つだけ自動化してみましょう。"}
+  };
+
+  // 7 questions, each option adds points to type keys
+  const QS=[
+    {q:"自分の考えを人に伝えるとき、ラクなのは？",a:[
+      ["文章を書く",{write:2,content:1}],
+      ["手順や図にまとめる",{content:2,stock:1}],
+      ["とにかく動いて見せる",{buy:2}]]},
+    {q:"副業に使える初期費用は？",a:[
+      ["ほぼゼロで始めたい",{write:2,content:1}],
+      ["少しなら出せる",{stock:2}],
+      ["仕入れに回す気はある",{buy:2}]]},
+    {q:"作業のテンションが上がるのは？",a:[
+      ["じっくり1人で作り込む",{write:1,stock:2}],
+      ["反応や数字が即返ってくる",{buy:2,content:1}],
+      ["ノウハウを誰かに教える",{content:2}]]},
+    {q:"あなたの強みに近いのは？",a:[
+      ["体験や考えを語れる",{write:2}],
+      ["人につまずきを解説できる",{content:2}],
+      ["フットワークが軽い",{buy:2}],
+      ["地道な改善が得意",{stock:2}]]},
+    {q:"続けるうえで耐えられないのは？",a:[
+      ["在庫や発送の手間",{write:1,content:1,stock:1}],
+      ["成果がすぐ出ないこと",{buy:2}],
+      ["毎回ゼロから書くこと",{stock:2,content:1}]]},
+    {q:"理想の稼ぎ方は？",a:[
+      ["積み上げた資産で少しずつ",{write:2,stock:1}],
+      ["一度作って売れ続ける",{content:2,stock:1}],
+      ["動いた分すぐ現金に",{buy:2}]]},
+    {q:"休日にやりがちなのは？",a:[
+      ["気づいたことをメモ・記録",{write:2,content:1}],
+      ["気になるモノを調べて買う",{buy:2}],
+      ["アプリや設定をいじる",{stock:2}]]},
+  ];
+
+  let qi=0, score={write:0,content:0,buy:0,stock:0};
+
+  function start(){
+    document.getElementById('start').style.display='none';
+    document.getElementById('quiz').style.display='block';
+    qi=0; score={write:0,content:0,buy:0,stock:0}; renderProg(); renderQ();
+  }
+  function renderProg(){
+    const p=document.getElementById('prog'); p.innerHTML='';
+    for(let i=0;i<QS.length;i++){const b=document.createElement('i');if(i<qi)b.className='on';p.appendChild(b);}
+  }
+  function renderQ(){
+    const cur=QS[qi];
+    const quiz=document.getElementById('quiz');
+    quiz.classList.remove('fade');void quiz.offsetWidth;quiz.classList.add('fade');
+    document.getElementById('qnum').textContent='Q'+(qi+1)+' / '+QS.length;
+    document.getElementById('qtext').textContent=cur.q;
+    const o=document.getElementById('opts');o.innerHTML='';
+    cur.a.forEach(([label,pts])=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=label;
+      b.onclick=()=>choose(pts);o.appendChild(b);
+    });
+  }
+  function choose(pts){
+    for(const k in pts) score[k]+=pts[k];
+    qi++; renderProg();
+    if(qi<QS.length) renderQ(); else showResult();
+  }
+  function showResult(){
+    document.getElementById('quiz').style.display='none';
+    const res=document.getElementById('result');res.style.display='block';res.classList.add('fade');
+    // rank types
+    const order=Object.keys(score).sort((a,b)=>score[b]-score[a]);
+    const top=TYPES[order[0]], second=TYPES[order[1]];
+    document.getElementById('resType').textContent=top.name;
+    document.getElementById('resType').style.color=top.color;
+    document.getElementById('resTag').textContent=top.tag;
+    const badge=document.getElementById('badge');
+    badge.textContent=top.emoji;badge.style.borderColor=top.color;badge.style.background="rgba(255,255,255,.03)";
+    document.getElementById('desc').textContent=top.desc;
+    document.getElementById('why').textContent=top.why;
+    document.getElementById('step').textContent=top.step;
+    document.getElementById('mix').textContent="サブタイプ："+second.name+"の素質もあります。";
+  }
+  function reset(){
+    document.getElementById('result').style.display='none';
+    document.getElementById('start').style.display='block';
+  }
+</script>
+</body>
+</html>
