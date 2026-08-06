@@ -20,6 +20,7 @@
 cd _notes/portfolio-tools
 python3 shots.py     # デモ5本を自動操作して shots/ に撮影（20枚）
 python3 compose.py   # 4カットを合成して portfolio/ に出力（10枚）
+python3 cover.py     # プロフィールのカバー画像（portfolio/cover.png）
 ```
 
 ## 何をしているか
@@ -47,6 +48,7 @@ python3 compose.py   # 4カットを合成して portfolio/ に出力（10枚）
 |---|---|
 | `portfolio/<slug>-flow.png` | 4カット合成。ポートフォリオのメイン画像 |
 | `portfolio/<slug>-result.png` | 結果画面の単体。2枚目以降に追加する |
+| `portfolio/cover.png` | プロフィールのカバー画像（2000×500） |
 
 slug: `isekai` / `side-biz` / `ai-level` / `shachiku` / `golf`
 
