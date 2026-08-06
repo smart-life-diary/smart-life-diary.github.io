@@ -57,6 +57,44 @@ def trim_tail(im, keep=28, tol=6):
     return im.crop((0, 0, w, min(im.height, y + keep)))
 
 
+RESULT_POINTS = {
+    "isekai":   ["12タイプから1つを判定", "6軸のレーダーチャートを自動描画", "画像生成プロンプトを自動発行"],
+    "side-biz": ["4タイプから1つを判定", "タイプごとに配色を出し分け", "シェアを促す一文で拡散へ"],
+    "ai-level": ["回答をスコア化し4段階で判定", "次にとる行動を3つ提示", "CTAでリード獲得へつなぐ"],
+    "shachiku": ["度合いを％で可視化", "3段階のスケールで位置を表示", "結果に寄り添う解説文"],
+    "golf":     ["4タイプから課題を特定", "タイプ共通の改善ヒントを提示", "シェアを促す一文で拡散へ"],
+}
+
+
+def build_result(slug, title, subtitle):
+    """結果画面の単体画像。縦長のままだと4:3で上下を切られるため、台紙に載せる。"""
+    W, H = 1600, 1200
+    shot = trim_tail(Image.open(f"{SHOTS}/{slug}-3-result.png").convert("RGB"))
+    ph = H - 100
+    pw = round(shot.width * ph / shot.height)
+    shot = shot.resize((pw, ph), Image.LANCZOS)
+
+    canvas = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(canvas)
+    x = W - 70 - pw
+    canvas.paste(shot, (x, (H - ph) // 2))
+
+    # 左側にテキスト
+    tx, ty = 70, 345
+    d.text((tx, ty), "RESULT", font=font(26), fill=GOLD)
+    bold(d, (tx, ty + 52), title, font(52), INK)
+    d.text((tx, ty + 130), subtitle, font=font(27), fill=MUT)
+    for i, p in enumerate(RESULT_POINTS[slug]):
+        y = ty + 220 + i * 62
+        d.ellipse((tx + 4, y + 13, tx + 18, y + 27), fill=GOLD)
+        d.text((tx + 36, y), p, font=font(29), fill=INK)
+
+    os.makedirs(OUT, exist_ok=True)
+    path = f"{OUT}/{slug}-result.png"
+    canvas.save(path, optimize=True)
+    return path
+
+
 def build(slug, title, subtitle, step4):
     cuts = []
     for key, _ in STEPS:
@@ -67,6 +105,11 @@ def build(slug, title, subtitle, step4):
     body_h = max(c.height for c in cuts) + 40          # パネル内余白
     W = MARGIN * 2 + CUT_W * 4 + GAP * 3
     H = HEAD_H + LABEL_H + body_h + MARGIN
+    # ココナラのサービス画像は4:3で表示されるため、左右を切られないよう縦に伸ばす
+    H43 = round(W * 3 / 4)
+    if H < H43:
+        body_h += H43 - H
+        H = H43
 
     canvas = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(canvas)
@@ -104,8 +147,7 @@ def build(slug, title, subtitle, step4):
 for slug, title, sub, s4 in DEMOS:
     p, size = build(slug, title, sub, s4)
     print(f"{p}  {size[0]}x{size[1]}  {os.path.getsize(p)//1024}KB")
-    # 結果画面の単体画像も書き出す
-    r = trim_tail(Image.open(f"{SHOTS}/{slug}-3-result.png").convert("RGB"))
-    rp = f"{OUT}/{slug}-result.png"
-    r.save(rp, optimize=True)
+    # 結果画面の単体画像も4:3の台紙に載せて書き出す
+    rp = build_result(slug, title, sub)
+    r = Image.open(rp)
     print(f"{rp}  {r.width}x{r.height}  {os.path.getsize(rp)//1024}KB")
