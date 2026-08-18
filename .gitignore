@@ -1,6 +1,7 @@
 _notes/portfolio-tools/shots/
 _notes/portfolio-tools/tplshots/
 _notes/portfolio-tools/reelwork/
+__pycache__/
 
 # 販売する商品。このリポジトリは public のためコミットしない。
 templates/

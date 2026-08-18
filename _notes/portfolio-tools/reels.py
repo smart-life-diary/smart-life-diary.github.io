@@ -3,7 +3,8 @@
 デモをヘッドレスChromiumで操作しながら録画し、ffmpeg でテロップを焼き込む。
 ページ全体に zoom をかけて等倍で録るため、拡大による劣化がない。
 """
-import os, shutil, subprocess, textwrap
+import os, shutil, subprocess
+import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -74,8 +75,13 @@ def record(slug, name):
         )
         pg = ctx.new_page()
         pg.goto(f"file://{SITE}/{slug}.html")
-        pg.add_style_tag(content=f"html{{zoom:{ZOOM}}}"
-                                 "body{align-items:center!important}")
+        # zoom を掛けると 100dvh が実寸より大きく計算され、中央寄せのページで
+        # カードが画面外へ押し出される。min-height を無効化して上寄せに固定する。
+        pg.add_style_tag(content=(
+            f"html{{zoom:{ZOOM}}}"
+            "html,body{min-height:0!important}"
+            "body{align-items:flex-start!important;padding-top:24px!important}"
+        ))
         pg.wait_for_timeout(3400)                       # スタート画面を見せる
 
         # 開始ボタン
@@ -117,6 +123,23 @@ def record(slug, name):
     return path
 
 
+def find_lead(src):
+    """Playwright の録画はページ描画前から始まる。空白が続く先頭の秒数を返す。"""
+    w, h, fps = 96, 126, 4
+    raw = subprocess.run(
+        ["ffmpeg", "-v", "error", "-i", src,
+         "-vf", f"fps={fps},scale={w}:{h}", "-pix_fmt", "rgb24",
+         "-f", "rawvideo", "-"],
+        capture_output=True).stdout
+    n = len(raw) // (w * h * 3)
+    frames = np.frombuffer(raw[:n * w * h * 3], dtype=np.uint8).reshape(n, h, w, 3)
+    for i, f in enumerate(frames):
+        body = f[int(h * 0.2):int(h * 0.9)]
+        if (body > 245).all(axis=2).mean() < 0.98:      # 真っ白でなくなった時点
+            return max(0.0, i / fps - 0.3)
+    return 0.0
+
+
 def burn(src, name, telops):
     """テロップを焼き込んで mp4 にする。"""
     os.makedirs(OUT, exist_ok=True)
@@ -139,9 +162,12 @@ def burn(src, name, telops):
         )
     vf = ",".join(filters) if filters else "null"
 
+    lead = find_lead(src)
+    dur = max(t1 for t0, t1, *_ in telops) + 0.6
     dst = os.path.join(OUT, name + ".mp4")
     cmd = [
         "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+        "-ss", f"{lead:.2f}", "-t", f"{dur:.2f}",
         "-i", src,
         "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
         "-vf", vf,
@@ -152,16 +178,17 @@ def burn(src, name, telops):
         dst,
     ]
     subprocess.run(cmd, check=True)
-    return dst
+    return dst, lead
 
 
 if __name__ == "__main__":
     os.makedirs(WORK, exist_ok=True)
     for r in REELS:
         src = record(r["slug"], r["name"])
-        dst = burn(src, r["name"], r["telops"])
+        dst, lead = burn(src, r["name"], r["telops"])
         dur = subprocess.run(
             ["ffprobe", "-v", "error", "-show_entries", "format=duration",
              "-of", "default=nw=1:nk=1", dst],
             capture_output=True, text=True).stdout.strip()
-        print(f"{dst}  {float(dur):.1f}s  {os.path.getsize(dst)//1024}KB")
+        print(f"{dst}  {float(dur):.1f}s  {os.path.getsize(dst)//1024}KB  "
+              f"（先頭{lead:.1f}sの空白を除去）")
