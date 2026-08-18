@@ -53,9 +53,11 @@ REELS = [
     },
 ]
 
-POS = {   # (x, y) の式。top は上の帯の中。本文に重ならない
+# テロップはすべて上の帯に置く。診断画面の上には一切重ねない
+# （締めの一言を画面中央に置くとタイプ名を隠してしまうため）
+POS = {
     "top": ("(w-text_w)/2", "(300-text_h)/2 + 20"),
-    "mid": ("(w-text_w)/2", "(h-text_h)/2"),
+    "mid": ("(w-text_w)/2", "(300-text_h)/2 + 20"),
 }
 
 
@@ -156,7 +158,6 @@ def burn(src, name, telops):
         filters.append(
             f"drawtext=fontfile={FONT}:textfile={tf}"
             f":fontsize=56:fontcolor=white:line_spacing=16"
-            + (":box=1:boxcolor=black@0.66:boxborderw=28" if pos == "mid" else "")
             + (
             f":x={x}:y={y}:enable='between(t\\,{t0}\\,{t1})'")
         )
