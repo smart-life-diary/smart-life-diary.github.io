@@ -159,9 +159,9 @@ for col in range(1, 11):
 
 # プルダウン
 dvs = [
-    (DataValidation(type="list", formula1="=マスタ!$A$5:$A$24", allow_blank=True), "B"),
+    (DataValidation(type="list", formula1="マスタ!$A$5:$A$24", allow_blank=True), "B"),
     (DataValidation(type="list", formula1='"新規,リピート"', allow_blank=True), "C"),
-    (DataValidation(type="list", formula1="=マスタ!$C$5:$C$24", allow_blank=True), "D"),
+    (DataValidation(type="list", formula1="マスタ!$C$5:$C$24", allow_blank=True), "D"),
     (DataValidation(type="list", formula1='"現金,カード,電子マネー,その他"', allow_blank=True), "H"),
     (DataValidation(type="list", formula1='"○"', allow_blank=True), "I"),
 ]
