@@ -376,10 +376,54 @@ def img3():
     return img
 
 
+def thumb():
+    """コンテンツ出品のサムネイル。正方形で、要素を中央に寄せて作る。
+
+    検索結果の枠は縦横比が読めず、上下左右どちらにも切られうる。
+    そのため文字と図は中央 78% の範囲に収め、端まで伸ばさない。
+    """
+    S = 1200
+    M = int(S * 0.11)                       # 端の余白。ここは切られてよい
+    img = Image.new("RGB", (S, S), BG)
+    d = ImageDraw.Draw(img)
+
+    d.text((M, M + 44), "工事別", font=font(52), fill=(150, 172, 200))
+    d.text((M, M + 102), "原価管理表", font=font(96), fill=(255, 255, 255))
+    d.text((M, M + 222), "Excel ／ 5シート ／ マクロなし",
+           font=font(38), fill=ACCENT)
+
+    # 色分けが伝わる最小の表。数字は読めなくてよい
+    cols = [("日付", 116, "c"), ("工事番号", 168, "c"), ("人工", 108, "r"),
+            ("労務費", 174, "r"), ("材料費", 174, "r"), ("原価計", 194, "r")]
+    fills = [IN_BG, IN_BG, IN_BG, CALC_BG, IN_BG, CALC_BG]
+    # 外注費の列を省くため、外注のない行だけを見本に使う。
+    # 混ぜると「材料費0なのに原価計が大きい」と、計算違いに見えてしまう。
+    rows = []
+    for (dt, no, ks, sg, nin, tan, zai, gai) in [r for r in NIPPO if r[7] == 0][:5]:
+        roumu = int(nin * tan)
+        rows.append([dt, no, f"{nin:.1f}", rome(roumu), rome(zai),
+                     rome(roumu + zai)])
+    x = (S - sum(c[1] for c in cols)) // 2
+    yy = table(d, x, M + 298, cols, rows, fills, rowh=72, headh=68)
+
+    d.rectangle([x, yy + 46, x + 30, yy + 76], fill=IN_BG)
+    d.text((x + 44, yy + 44), "入力", font=font(30), fill=(255, 255, 255))
+    d.rectangle([x + 190, yy + 46, x + 220, yy + 76], fill=CALC_BG)
+    d.text((x + 234, yy + 44), "自動計算", font=font(30), fill=(255, 255, 255))
+
+    d.text((M, yy + 122), "日報を入れるだけで、工事ごとの粗利が出ます。",
+           font=font(40), fill=(214, 226, 242))
+    return img
+
+
 if __name__ == "__main__":
     os.makedirs(OUT_P, exist_ok=True)
     p = build_xlsx()
     print(p, os.path.getsize(p) // 1024, "KB")
+    im = thumb()
+    dst = os.path.join(OUT_P, "koji-thumb.png")
+    im.save(dst)
+    print(dst, im.size, os.path.getsize(dst) // 1024, "KB")
     for i, fn in enumerate([img1, img2, img3], start=1):
         im = fn()
         dst = os.path.join(OUT_P, f"koji-{i}.png")
