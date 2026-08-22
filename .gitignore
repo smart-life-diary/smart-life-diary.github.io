@@ -1,0 +1,7 @@
+_notes/portfolio-tools/shots/
+_notes/portfolio-tools/tplshots/
+_notes/portfolio-tools/reelwork/
+
+# 販売する商品・提案の納品物。このリポジトリは public のためコミットしない。
+templates/
+samples/
