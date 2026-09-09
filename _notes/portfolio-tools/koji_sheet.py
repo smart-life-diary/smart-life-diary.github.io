@@ -258,6 +258,8 @@ def build_xlsx():
             c.border = BORDER
             c.number_format = "0.0" if col == 2 else ("#,##0" if col == 3 else "General")
 
+    # 生成直後の .xlsx には計算結果が入らない。開いた時点で必ず再計算させる。
+    wb.calculation.fullCalcOnLoad = True
     path = os.path.join(OUT_X, "工事別原価管理表_サンプル.xlsx")
     wb.save(path)
     return path
