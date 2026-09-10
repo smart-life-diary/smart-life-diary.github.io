@@ -528,6 +528,7 @@ slug は `isekai` / `side-biz` / `ai-level` / `shachiku` / `golf` の5種類。
 | 2026-09-09 | キーワードの需要調査（55語） | `_notes/demand-research-2026-09.md`。建設特化は買い手がいないことが判明 |
 | 2026-09-10 | 出品Gの画像3枚を作成 | `_notes/portfolio-tools/deck_images.py`。1560×1300 |
 | 2026-09-10 | 出品Gの紹介動画を作成 | `_notes/portfolio-tools/deck_video.py`。1920×1080 / 58秒 / 無音 |
+| 2026-09-10 | 出品Gのヒーロー画像2枚を作成 | `_notes/portfolio-tools/deck_hero.py`。制作サンプル8枚を散らす構成 |
 
 ### 初受注から分かったこと（2026-09-09）
 
