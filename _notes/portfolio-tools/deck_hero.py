@@ -360,3 +360,10 @@ if __name__ == "__main__":
         im = fn()
         im.save(p)
         print(p, im.size, f"{im.size[0] / im.size[1]:.2f}:1", os.path.getsize(p) // 1024, "KB")
+
+    # ヒーローに散らしているサンプルを、ポートフォリオ登録用に単体でも書き出す。
+    # 登録するときは説明文に「この出品のために作成したサンプル」と明記すること。
+    for i, fn in enumerate(SLIDES, start=1):
+        p = os.path.join(OUT_P, f"deck-sample-{i:02d}.png")
+        fn().resize((1920, 1080), Image.LANCZOS).save(p)
+        print(p, os.path.getsize(p) // 1024, "KB")
