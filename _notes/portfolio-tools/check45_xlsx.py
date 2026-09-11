@@ -39,8 +39,10 @@ CHOICES = ["できている", "あいまい", "できていない"]
 FIRST = 4               # チェックシートの1行目のデータ行
 
 
+# フォント名は建設帳票5点セットと揃える。あちらは実際に売れて、
+# 購入者の環境で問題が出ていない。名前を変える理由が無い。
 def f(sz=11, b=False, color=INK):
-    return Font(name="游ゴシック", size=sz, bold=b, color=color)
+    return Font(name="Meiryo", size=sz, bold=b, color=color)
 
 
 def fill(c):

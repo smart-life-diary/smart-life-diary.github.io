@@ -28,8 +28,11 @@ from check45_items import AXES, ITEMS, BANDS, AXIS_ADVICE
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.abspath(os.path.join(HERE, "..", "..", "samples", "提案書チェック45"))
 
-FONT = ("-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',"
-        "'Yu Gothic Medium','Meiryo',sans-serif")
+# 先頭の Noto Sans CJK JP は**この生成環境のため**。ここを外すと Chromium が
+# 中国語フォント（文泉驛正黑）に落ち、PDFに中国字体が埋め込まれる。実際に一度やった。
+# 2番目以降は、HTMLを開く購入者の端末にある日本語フォント。
+FONT = ("'Noto Sans CJK JP','Noto Sans JP','Hiragino Kaku Gothic ProN',"
+        "'Yu Gothic Medium','游ゴシック',Meiryo,sans-serif")
 
 CSS = """
 *{margin:0;padding:0;box-sizing:border-box}
