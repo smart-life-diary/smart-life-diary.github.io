@@ -77,6 +77,7 @@ def sheet_intro(wb):
         ("1.  「チェック」シートを開き、D列のプルダウンから3つのうち1つを選びます。", None),
         ("2.  45項目すべて選び終えると、「結果」シートに点数が出ます。", None),
         ("3.  「結果」シートの下に、できていない項目だけが並びます。上から直してください。", None),
+        ("4.  紙に書き込みたいときは「印刷用」シートを印刷してください（A4縦）。", None),
         ("", None),
         ("配点", None),
         ("できている 2点 ／ あいまい 1点 ／ できていない 0点。45項目で90点満点です。", None),
@@ -229,12 +230,92 @@ def sheet_result(wb):
     return ws
 
 
+def sheet_print(wb):
+    """紙に出すためのシート。
+
+    ココナラのコンテンツ出品は**1出品につき1ファイル**しか上げられない。
+    PDFを別に付けられないので、印刷用の体裁をこのブックの中に持たせる。
+    A4縦・幅に合わせて縮小する設定を入れてあるので、そのまま印刷できる。
+    """
+    ws = wb.create_sheet("印刷用")
+    ws.sheet_view.showGridLines = False
+    for k, v in {"A": 5, "B": 62, "C": 9, "D": 9, "E": 9}.items():
+        ws.column_dimensions[k].width = v
+
+    put(ws, "A1", "提案書・営業資料チェック45", font=f(16, True), border=False)
+    put(ws, "A2", "出来上がった資料を横に置いて、45項目に印を付けてください。",
+        font=f(9, color="FF6C7C91"), border=False)
+    put(ws, "A3", "軸ごとに合計すると、どこで落ちているかが分かります。",
+        font=f(9, color="FF6C7C91"), border=False)
+
+    r = 5
+    for ai, (name, note, _c, _d) in enumerate(AXES):
+        put(ws, f"A{r}", f"{name}　{note}　15項目・30点",
+            font=f(12, True, ACCENT), border=False)
+        r += 1
+        for j, h in enumerate(["", "チェック項目", "できている\n2点", "あいまい\n1点",
+                               "できていない\n0点"]):
+            put(ws, f"{get_column_letter(j+1)}{r}", h or None,
+                font=f(8, True, "FFFFFFFF"), bg=HEAD_BG, align="center", wrap=True)
+        ws.row_dimensions[r].height = 30
+        r += 1
+        for i, (a, t) in enumerate(ITEMS, 1):
+            if a != ai:
+                continue
+            put(ws, f"A{r}", i, font=f(9, True, ACCENT), align="center")
+            put(ws, f"B{r}", t, font=f(9.5), wrap=True)
+            for col in "CDE":
+                put(ws, f"{col}{r}", "□", font=f(11), align="center")
+            ws.row_dimensions[r].height = 22
+            r += 1
+        put(ws, f"B{r}", f"{name}　小計", font=f(9.5, True), align="right", bg=SOFT)
+        ws.merge_cells(f"C{r}:E{r}")
+        put(ws, f"C{r}", "／ 30", font=f(9.5), align="center", bg=IN_BG)
+        for col in "DE":
+            ws[f"{col}{r}"].border = BORDER
+        r += 2
+
+    put(ws, f"B{r}", "合計", font=f(12, True), align="right", bg=SOFT)
+    ws.merge_cells(f"C{r}:E{r}")
+    put(ws, f"C{r}", "／ 90", font=f(12, True), align="center", bg=IN_BG)
+    for col in "DE":
+        ws[f"{col}{r}"].border = BORDER
+    ws.row_dimensions[r].height = 26
+    r += 2
+
+    for lo, msg, desc in BANDS:
+        put(ws, f"A{r}", f"{lo}点以上", font=f(9, True), align="center", bg=SOFT)
+        ws.merge_cells(f"B{r}:E{r}")
+        put(ws, f"B{r}", f"{msg}　{desc}", font=f(9), wrap=True)
+        for col in "CDE":
+            ws[f"{col}{r}"].border = BORDER
+        ws.row_dimensions[r].height = 26
+        r += 1
+
+    r += 1
+    put(ws, f"A{r}", "いちばん点数の低い軸から手を付けてください。",
+        font=f(9, color="FF6C7C91"), border=False)
+    put(ws, f"A{r+1}", "3軸を同時に直そうとすると、表現を整えたあとに構成をやり直すことになります。",
+        font=f(9, color="FF6C7C91"), border=False)
+
+    ws.print_area = f"A1:E{r+1}"
+    ws.page_setup.orientation = "portrait"
+    ws.page_setup.paperSize = ws.PAPERSIZE_A4
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+    ws.sheet_properties.pageSetUpPr.fitToPage = True
+    ws.page_margins.left = ws.page_margins.right = 0.4
+    ws.page_margins.top = ws.page_margins.bottom = 0.5
+    return ws
+
+
 def build():
     wb = Workbook()
     wb.remove(wb.active)
     sheet_intro(wb)
     sheet_check(wb)
     sheet_result(wb)
+    sheet_print(wb)
     # 生成直後の .xlsx には計算結果が入らない。開いた時点で必ず再計算させる。
     wb.calculation.fullCalcOnLoad = True
     return wb
