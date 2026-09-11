@@ -466,7 +466,10 @@ if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
     for name, fn in BOOKS:
         p = os.path.join(OUT, name)
-        fn().save(p)
+        wb = fn()
+        # 生成直後の .xlsx には計算結果が入らない。開いた時点で必ず再計算させる。
+        wb.calculation.fullCalcOnLoad = True
+        wb.save(p)
         print(f"{p}  {os.path.getsize(p) // 1024}KB")
 
 
