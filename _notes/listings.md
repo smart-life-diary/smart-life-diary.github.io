@@ -35,9 +35,13 @@
 A と D は8月の主力だったが、9月の需要調査で領域が薄いと出たため優先度を下げた。
 ただし Web制作カテゴリからの流入口なので消していない。
 
-出品Gの登録状況（9/25 時点で全部済み）
+出品Gの登録状況（9/26 時点）
 
-- 画像5枚（deck-h1／deck-h2／deck-2／deck-1／deck-3）
+- 画像**7枚**。1枚目はChatGPT生成のヒーロー、2枚目は旧 deck-1〜3 を1枚にまとめたもの、
+  3〜7枚目が deck-m1〜m5。**上限10枚に対して3枠空いている**
+- **1枚目の金バッジが「実績豊富な / プロが対応」＋★★★ になっている（要差し替え）。**
+  販売実績0件でこれは書けない。`portfolio-tools/deck_badge_fix.py` で
+  「公共案件の / 提案書15年」に描き直した版が `portfolio/deck-hero-fix.png`
 - トークルーム回答例 **3件**（購入者側・出品者側のペア）
 - よくある質問 5件、有料オプション 7件（500〜3,000円）
 - 一度に受注可能な件数 2枠
@@ -92,6 +96,7 @@ A と D は8月の主力だったが、9月の需要調査で領域が薄いと�
 | G | `portfolio-tools/deck_images.py` | deck-1〜3.png |
 | G | `portfolio-tools/deck_hero.py` | deck-h1／h2.png ＋ deck-sample-01〜08.png |
 | G | `portfolio-tools/deck_more.py` | deck-m1〜m5.png（サンプルを1.20:1に置き直したもの） |
+| G | `portfolio-tools/deck_badge_fix.py` | deck-hero-fix.png（AI生成ヒーローのバッジ文言を直した版） |
 | G（動画） | `portfolio-tools/deck_video.py` | deck-movie.mp4（未使用） |
 | コンテンツH | `portfolio-tools/check45_items.py` ＋ `check45_xlsx.py` | 提案書チェック45.xlsx |
 | コンテンツH | `portfolio-tools/check45_build.py` | 印刷用PDF（出品では未使用） |
@@ -103,7 +108,9 @@ A と D は8月の主力だったが、9月の需要調査で領域が薄いと�
 
 ## 7. 未着手・保留
 
-- 出品Gの画像は5枚。**追加の5枚（`deck-m1`〜`m5`）を作成済み**、登録すれば上限の10枚になる
+- 出品Gの1枚目を `deck-hero-fix.png` に差し替える（バッジの文言）
+- 出品Gの画像は7枚。**空き3枠**に `deck-h2`（このサービスは）と `deck-2`／`deck-3` を
+  単独で入れる（2枚目にまとめた版は文字が小さく、スマホで読めない）
 - 出品Gの紹介動画（`deck-movie.mp4`）は作ってあるが、YouTubeへ上げていないので未登録
 - インボイス発行事業者は未登録（課税事業者になる話なので、今の規模では登録しない判断）
 
