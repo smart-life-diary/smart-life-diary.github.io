@@ -97,6 +97,7 @@ A と D は8月の主力だったが、9月の需要調査で領域が薄いと�
 | G | `portfolio-tools/deck_hero.py` | deck-h1／h2.png ＋ deck-sample-01〜08.png |
 | G | `portfolio-tools/deck_more.py` | deck-m1〜m5.png（サンプルを1.20:1に置き直したもの） |
 | G | `portfolio-tools/deck_badge_fix.py` | deck-hero-fix.png（AI生成ヒーローのバッジ文言を直した版） |
+| G | `portfolio-tools/deck_kit.py` | deck-k1〜k3.png（流れ／料金／お受けできる範囲） |
 | G（動画） | `portfolio-tools/deck_video.py` | deck-movie.mp4（未使用） |
 | コンテンツH | `portfolio-tools/check45_items.py` ＋ `check45_xlsx.py` | 提案書チェック45.xlsx |
 | コンテンツH | `portfolio-tools/check45_build.py` | 印刷用PDF（出品では未使用） |
@@ -109,8 +110,7 @@ A と D は8月の主力だったが、9月の需要調査で領域が薄いと�
 ## 7. 未着手・保留
 
 - 出品Gの1枚目を `deck-hero-fix.png` に差し替える（バッジの文言）
-- 出品Gの画像は7枚。**空き3枠**に `deck-h2`（このサービスは）と `deck-2`／`deck-3` を
-  単独で入れる（2枚目にまとめた版は文字が小さく、スマホで読めない）
+- 出品Gの空き3枠に `deck-k1`（流れ）／`deck-k2`（料金）／`deck-k3`（範囲）を登録する
 - 出品Gの紹介動画（`deck-movie.mp4`）は作ってあるが、YouTubeへ上げていないので未登録
 - インボイス発行事業者は未登録（課税事業者になる話なので、今の規模では登録しない判断）
 
