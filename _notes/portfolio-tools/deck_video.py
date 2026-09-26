@@ -20,7 +20,11 @@ import subprocess
 
 from PIL import Image, ImageDraw, ImageFont
 
-JP = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+# 初版は IPAGothic で書き出した。太字を持たない書体なので見出しと本文が
+# 同じ太さになり、どこを読めばいいかが伝わらない。Noto には実際の Bold があるので
+# 差し替える。index=0 が日本語。SC/TC を引くと字形が中国語になる。
+NOTO_R = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+NOTO_B = "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"
 HERE = os.path.dirname(os.path.abspath(__file__))
 WORK = os.path.join(HERE, "videowork")
 
@@ -42,9 +46,9 @@ GOOD      = (20, 142, 102)
 GOOD_BG   = (232, 247, 240)
 
 
-@functools.lru_cache(maxsize=64)
-def font(sz):
-    return ImageFont.truetype(JP, sz)
+@functools.lru_cache(maxsize=128)
+def font(sz, bold=False):
+    return ImageFont.truetype(NOTO_B if bold else NOTO_R, sz, index=0)
 
 
 def A(rgb, a):
@@ -69,17 +73,17 @@ def fade(t, dur, tin=0.40, tout=0.35):
 
 
 # ── 描画の部品 ───────────────────────────────────────────
-def text(d, xy, s, sz, col, a=1.0):
-    d.text(xy, s, font=font(sz), fill=A(col, a))
+def text(d, xy, s, sz, col, a=1.0, b=False):
+    d.text(xy, s, font=font(sz, b), fill=A(col, a))
 
 
-def ctext(d, cx, y, s, sz, col, a=1.0):
-    f = font(sz)
+def ctext(d, cx, y, s, sz, col, a=1.0, b=False):
+    f = font(sz, b)
     d.text((cx - d.textlength(s, font=f) / 2, y), s, font=f, fill=A(col, a))
 
 
-def rtext(d, x_right, y, s, sz, col, a=1.0):
-    f = font(sz)
+def rtext(d, x_right, y, s, sz, col, a=1.0, b=False):
+    f = font(sz, b)
     d.text((x_right - d.textlength(s, font=f), y), s, font=f, fill=A(col, a))
 
 
@@ -94,17 +98,19 @@ def card(d, x, y, w, h, a=1.0, accent=ACCENT, r=14, bar=True):
 
 def head(d, s, sub, a=1.0, dy=0):
     """画面上部の見出し。"""
-    text(d, (110, 74 + dy), s, 62, INK, a)
+    # Noto は IPAGothic より字面が下にずれるので、初版の座標のままだと
+    # 見出し・補足・罫線が詰まる。3つまとめて上へ寄せる。
+    text(d, (110, 56 + dy), s, 62, INK, a, b=True)
     if sub:
-        text(d, (112, 164 + dy), sub, 32, SUB, a)
-    d.rounded_rectangle([112, 216 + dy, 202, 223 + dy], radius=4, fill=A(ACCENT, a))
+        text(d, (112, 156 + dy), sub, 32, SUB, a)
+    d.rounded_rectangle([112, 210 + dy, 202, 217 + dy], radius=4, fill=A(ACCENT, a))
 
 
 # ── シーン ───────────────────────────────────────────────
 def s_title(d, t, dur):
     dy = int(22 * (1 - app(t, 0.0, 0.9)))
-    text(d, (150, 386 - dy), "提案書・営業資料を、", 84, INK, app(t, 0.05, 0.7))
-    text(d, (150, 502 - dy), "構成から組み立てます", 84, INK, app(t, 0.30, 0.7))
+    text(d, (150, 386 - dy), "提案書・営業資料を、", 84, INK, app(t, 0.05, 0.7), b=True)
+    text(d, (150, 502 - dy), "構成から組み立てます", 84, INK, app(t, 0.30, 0.7), b=True)
     a2 = app(t, 0.95, 0.7)
     d.rounded_rectangle([152, 640, 242, 648], radius=4, fill=A(ACCENT, a2))
     text(d, (152, 684), "公共案件の技術提案書を15年", 40, SUB, a2)
@@ -112,7 +118,9 @@ def s_title(d, t, dur):
 
 
 def s_problem(d, t, dur):
-    head(d, "よくいただくご相談", "", app(t, 0.0, 0.5))
+    # 「よくいただくご相談」と書いていた。販売実績1件で、受けた相談の量は
+    # 主張できない。出品ページの本文も「想定した」と書いてある。そちらに合わせる。
+    head(d, "想定しているのは、こういう場面です", "", app(t, 0.0, 0.5))
     quotes = ["「作った資料が、読んでもらえない」",
               "「見た目は整えたのに、話が前に進まない」"]
     y = 380
@@ -164,7 +172,7 @@ def _column(d, x, w, y0, title, items, col, soft, t, t0, pitch=RE_PITCH, ch=RE_C
     if a <= 0:
         return
     d.rounded_rectangle([x, y0, x + w, y0 + 70], radius=12, fill=A(col, a))
-    ctext(d, x + w / 2, y0 + 16, title, 36, (255, 255, 255), a)
+    ctext(d, x + w / 2, y0 + 16, title, 36, (255, 255, 255), a, b=True)
     y = y0 + 96
     for i, s in enumerate(items):
         ai = app(t, t0 + 0.35 + i * 0.30, 0.42)
@@ -290,8 +298,8 @@ def s_flow(d, t, dur):
         card(d, x, y0 + dy, cw, 500, a)
         d.rounded_rectangle([x + 28, y0 + 26 + dy, x + 82, y0 + 74 + dy],
                             radius=10, fill=A(ACCENT_BG, a))
-        ctext(d, x + 55, y0 + 32 + dy, str(i + 1), 30, ACCENT, a)
-        text(d, (x + 100, y0 + 32 + dy), title, 30, INK, a)
+        ctext(d, x + 55, y0 + 32 + dy, str(i + 1), 30, ACCENT, a, b=True)
+        text(d, (x + 100, y0 + 32 + dy), title, 30, INK, a, b=True)
         ty = y0 + 108 + dy
         for it in items:
             text(d, (x + 40, ty), it, 27, BODY, a)
@@ -305,11 +313,14 @@ def s_flow(d, t, dur):
                       fill=A(ACCENT, aa))
     text(d, (152, 866), "原稿がまとまっていない段階のご相談で構いません。",
          36, SUB, app(t, 4.20, 0.6))
+    # 3枚のカードの中身は、受注した案件ではなく説明用に作った例。必ず断る。
+    text(d, (152, 926), "※ カード内の内容は、説明のために作成したサンプルです。",
+         28, SUB, app(t, 4.60, 0.6))
 
 
 def s_close(d, t, dur):
     dy = int(20 * (1 - app(t, 0.0, 0.9)))
-    text(d, (150, 372 - dy), "構成から、お引き受けします", 76, INK, app(t, 0.05, 0.7))
+    text(d, (150, 372 - dy), "構成から、お引き受けします", 76, INK, app(t, 0.05, 0.7), b=True)
     a2 = app(t, 0.75, 0.7)
     d.rounded_rectangle([152, 500, 242, 508], radius=4, fill=A(ACCENT, a2))
     text(d, (152, 548), "箇条書きのメモ、既存の資料、打ち合わせの書き起こし。",
@@ -317,7 +328,7 @@ def s_close(d, t, dur):
     text(d, (152, 608), "どの形からでも組み立てます。", 38, SUB, app(t, 1.05, 0.7))
     a3 = app(t, 1.70, 0.7)
     card(d, 150, 700, 980, 128, a3)
-    text(d, (206, 742), "まずはメッセージでご相談ください", 44, INK, a3)
+    text(d, (206, 742), "まずはメッセージでご相談ください", 44, INK, a3, b=True)
 
 
 SCENES = [
