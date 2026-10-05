@@ -58,8 +58,8 @@ KITS = [
         catch="通らない原因は見た目より並び順。出す前に点検します",
         category=("ビジネス代行・事務代行", "資料・企画書作成", "営業資料作成"),
         method="添削",
-        genre=["PowerPoint", "Word", "PDF"],
-        industry=["IT・テクノロジー", "メーカー・製造", "コンサル・リサーチ"],
+        genre=["PowerPoint", "Word"],                # ジャンルの選択肢に PDF は無い（PowerPoint/Word/Excel/Keynote/その他）
+        industry=["IT・テクノロジー", "メーカー・製造", "建設・不動産"],
         price=4000, days=2, revisions=1, slots=3,   # カテゴリの下限が 4,000円（フォームで実測）
         body=(
             "「見た目は整えたのに、反応がない」「どこを直せばいいか分からない」\n"
@@ -402,7 +402,7 @@ KITS = [
         catch="10枚の資料を、決める人が読む1枚に",
         category=("ビジネス代行・事務代行", "資料・企画書作成", "企画書作成"),
         method="作成代行",
-        genre=["PowerPoint", "Word", "PDF"],
+        genre=["PowerPoint", "Word"],
         industry=["IT・テクノロジー", "メーカー・製造", "コンサル・リサーチ"],
         price=4000, days=2, revisions=2, slots=3,   # 同上、下限 4,000円
         body=(
@@ -642,14 +642,17 @@ def render(k, idx, total):
     L.append("")
     L.append("## 4. カテゴリ固有の項目")
     L.append("")
-    L.append("**手法（ラジオボタン・1つだけ）**")
+    L.append("**基本内容（ラジオボタン・1つだけ）**")
     L.append(block(k["method"]))
     L.append("")
-    L.append("**ジャンル（複数可）**")
+    L.append("**ジャンル（最大5個）**　※選択肢は PowerPoint／Word／Excel／Keynote／その他。PDF は無い")
     L.append(block("\n".join(k["genre"])))
     L.append("")
-    L.append("**業種（複数可）**　※一覧に無い名前があれば、近いものを選ぶか、一覧を送ってください")
+    L.append("**業種（最大3個）**")
     L.append(block("\n".join(k["industry"])))
+    L.append("")
+    L.append("**言語（最大3個）**")
+    L.append(block("日本語"))
     L.append("")
     L.append("## 5. 価格・納期・件数")
     L.append("")
@@ -694,6 +697,9 @@ def render(k, idx, total):
     L.append("")
     L.append("| 項目 | 値 |")
     L.append("|---|---|")
+    L.append("| ビデオチャットで事前すり合わせに対応できるようにする | **OFF** |")
+    L.append("| このサービスを定期購入可能にする | **OFF** |")
+    L.append("| 予想お届け日数の「最短日と表示する」 | **OFF** |")
     L.append("| 見積り・カスタマイズの相談を受け付ける | **ON** |")
     L.append("| 画像よりも動画を優先して表示する | **OFF** |")
     L.append("")
